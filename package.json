@@ -5,6 +5,11 @@
   "description": "Performs one-shot actions with ChatGPT",
   "icon": "openai-logo.png",
   "author": "alanzchen",
+  "contributors": [
+    "kolacek.m",
+    "JonathanAquino",
+    "drewbabel"
+  ],
   "categories": [
     "Productivity"
   ],
@@ -32,30 +37,66 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -82,30 +123,66 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -132,30 +209,66 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -182,30 +295,66 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -224,88 +373,66 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "ask",
-      "title": "Ask",
-      "description": "Ask ChatGPT a question about the selected text",
-      "mode": "view",
-      "preferences": [
-        {
-          "name": "ask_sys_prompt",
-          "title": "System Prompt",
-          "description": "The system prompt for the ask command",
-          "type": "textfield",
-          "default": "You are a helpful assistant.",
-          "required": false
-        },
-        {
-          "name": "ask_default_question",
-          "title": "Default Question",
-          "description": "The question that will be asked about the selected text if you don't input one",
-          "type": "textfield",
-          "default": "Please explain this.",
-          "required": false
-        },
-        {
-          "name": "model_ask",
-          "description": "Override the global preferred model for this command",
-          "type": "dropdown",
-          "required": false,
-          "title": "Model Override",
-          "placeholder": "Follow global model",
-          "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -313,7 +440,7 @@
     {
       "name": "preview",
       "title": "Preview",
-      "description": "Use selected text as ChatGPT output and preview output",
+      "description": "Use selected text as ChatGPT input and preview output",
       "mode": "view",
       "preferences": [
         {
@@ -324,30 +451,238 @@
           "title": "Model Override",
           "placeholder": "Follow global model",
           "data": [
-            {
-              "title": "Follow global model",
-              "value": "global"
-            },
-            {
-              "title": "GPT-3.5 Turbo",
-              "value": "gpt-3.5-turbo"
-            },
-            {
-              "title": "GPT-3.5 Turbo (16K)",
-              "value": "gpt-3.5-turbo-16k"
-            },
-            {
-              "title": "GPT-4",
-              "value": "gpt-4"
-            },
-            {
-              "title": "GPT-4 (32K, 0613)",
-              "value": "gpt-4-32k-0613"
-            },
-            {
-              "title": "GPT-4 Turbo",
-              "value": "gpt-4-turbo-preview"
-            }
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "transform",
+      "title": "Transform",
+      "description": "Replace selected text with ChatGPT output, based on a prompt entered when the command is run",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "prompt",
+          "placeholder": "e.g. beautify JSON",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "preferences": [
+        {
+          "name": "model_transform",
+          "description": "Override the global preferred model for this command",
+          "type": "dropdown",
+          "required": false,
+          "title": "Model Override",
+          "placeholder": "Follow global model",
+          "data": [
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "transform_preview",
+      "title": "Transform Preview",
+      "description": "Same as Transform, but shows the output in a preview window instead of replacing the selected text",
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "prompt",
+          "placeholder": "e.g. beautify JSON",
+          "type": "text",
+          "required": true
+        }
+      ],
+      "preferences": [
+        {
+          "name": "model_transform_preview",
+          "description": "Override the global preferred model for this command",
+          "type": "dropdown",
+          "required": false,
+          "title": "Model Override",
+          "placeholder": "Follow global model",
+          "data": [
+                    {
+                              "title": "Follow global model",
+                              "value": "global"
+                    },
+                    {
+                              "title": "GPT-5.2",
+                              "value": "gpt-5.2"
+                    },
+                    {
+                              "title": "GPT-5.1",
+                              "value": "gpt-5.1"
+                    },
+                    {
+                              "title": "GPT-5",
+                              "value": "gpt-5"
+                    },
+                    {
+                              "title": "GPT-5 Mini",
+                              "value": "gpt-5-mini"
+                    },
+                    {
+                              "title": "GPT-5 Nano",
+                              "value": "gpt-5-nano"
+                    },
+                    {
+                              "title": "GPT-5.2 Chat Latest",
+                              "value": "gpt-5.2-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.1 Chat Latest",
+                              "value": "gpt-5.1-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5 Chat Latest",
+                              "value": "gpt-5-chat-latest"
+                    },
+                    {
+                              "title": "GPT-5.2 Codex",
+                              "value": "gpt-5.2-codex"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex Max",
+                              "value": "gpt-5.1-codex-max"
+                    },
+                    {
+                              "title": "GPT-5.1 Codex",
+                              "value": "gpt-5.1-codex"
+                    },
+                    {
+                              "title": "GPT-5 Codex",
+                              "value": "gpt-5-codex"
+                    },
+                    {
+                              "title": "GPT-5.2 Pro",
+                              "value": "gpt-5.2-pro"
+                    },
+                    {
+                              "title": "GPT-5 Pro",
+                              "value": "gpt-5-pro"
+                    }
           ]
         }
       ]
@@ -356,7 +691,7 @@
   "dependencies": {
     "@nem035/gpt-3-encoder": "^1.1.7",
     "@raycast/api": "^1.50.0",
-    "openai": "^4.14.2",
+    "openai": "^4.53.2",
     "run-applescript": "^6.1.0"
   },
   "preferences": [
@@ -372,27 +707,63 @@
       "description": "OpenAI LLM to use for your commands",
       "type": "dropdown",
       "data": [
-        {
-          "title": "GPT-3.5 Turbo",
-          "value": "gpt-3.5-turbo"
-        },
-        {
-          "title": "GPT-3.5 Turbo (16K)",
-          "value": "gpt-3.5-turbo-16k"
-        },
-        {
-          "title": "GPT-4",
-          "value": "gpt-4"
-        },
-        {
-          "title": "GPT-4 (32K, 0613)",
-          "value": "gpt-4-32k-0613"
-        },
-        {
-          "title": "GPT-4 Turbo",
-          "value": "gpt-4-turbo-preview"
-        }
-      ],
+                {
+                        "title": "GPT-5.2",
+                        "value": "gpt-5.2"
+                },
+                {
+                        "title": "GPT-5.1",
+                        "value": "gpt-5.1"
+                },
+                {
+                        "title": "GPT-5",
+                        "value": "gpt-5"
+                },
+                {
+                        "title": "GPT-5 Mini",
+                        "value": "gpt-5-mini"
+                },
+                {
+                        "title": "GPT-5 Nano",
+                        "value": "gpt-5-nano"
+                },
+                {
+                        "title": "GPT-5.2 Chat Latest",
+                        "value": "gpt-5.2-chat-latest"
+                },
+                {
+                        "title": "GPT-5.1 Chat Latest",
+                        "value": "gpt-5.1-chat-latest"
+                },
+                {
+                        "title": "GPT-5 Chat Latest",
+                        "value": "gpt-5-chat-latest"
+                },
+                {
+                        "title": "GPT-5.2 Codex",
+                        "value": "gpt-5.2-codex"
+                },
+                {
+                        "title": "GPT-5.1 Codex Max",
+                        "value": "gpt-5.1-codex-max"
+                },
+                {
+                        "title": "GPT-5.1 Codex",
+                        "value": "gpt-5.1-codex"
+                },
+                {
+                        "title": "GPT-5 Codex",
+                        "value": "gpt-5-codex"
+                },
+                {
+                        "title": "GPT-5.2 Pro",
+                        "value": "gpt-5.2-pro"
+                },
+                {
+                        "title": "GPT-5 Pro",
+                        "value": "gpt-5-pro"
+                }
+        ],
       "required": true,
       "title": "OpenAI Model"
     },
@@ -403,45 +774,6 @@
       "label": "Enabled",
       "type": "checkbox",
       "default": false,
-      "required": false
-    },
-    {
-      "name": "enableStreaming",
-      "title": "Response Streaming",
-      "label": "Enabled",
-      "description": "Enable response streaming. This may not be supported by all custom deployments.",
-      "type": "checkbox",
-      "default": true,
-      "required": false
-    },
-    {
-      "name": "useAzure",
-      "label": "Use Azure OpenAI",
-      "description": "Use Azure OpenAI rather than OpenAI",
-      "type": "checkbox",
-      "title": "Azure OpenAI",
-      "default": false,
-      "required": false
-    },
-    {
-      "name": "azureEndpoint",
-      "description": "Leave empty if you are not using Azure OpenAI. Example: https://your-org.azure-api.net",
-      "type": "textfield",
-      "title": "Azure Endpoint",
-      "required": false
-    },
-    {
-      "name": "azureDeployment",
-      "description": "Leave empty if you are not using Azure OpenAI. Example: gpt-35-turbo",
-      "type": "textfield",
-      "title": "Azure Deployment",
-      "required": false
-    },
-    {
-      "name": "azureAPIVersion",
-      "description": "Leave empty if you are not using Azure OpenAI. Example: 2020-10-10",
-      "type": "textfield",
-      "title": "Azure API Version",
       "required": false
     }
   ],
@@ -455,9 +787,13 @@
   },
   "scripts": {
     "build": "ray build -e dist",
+    "build-package": "node scripts/build-package.js",
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
     "publish": "ray publish"
-  }
+  },
+  "platforms": [
+    "macOS"
+  ]
 }

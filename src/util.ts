@@ -6,7 +6,7 @@ function escapeStringForAppleScript(str: string) {
   return str.replace(/[\\"]/g, "\\$&");
 }
 
-export async function sendToSideNote(content: string) {
+export async function sentToSideNote(content: string) {
   const applescript = `
   tell application "SideNotes"
     set f to first folder
@@ -25,23 +25,42 @@ export function countToken(content: string) {
   return encode(content).length;
 }
 
-export function estimatePrice(prompt_token: number, output_token: number, model: string) {
-  // price is per 1K tokens, but we are measuing in cents. Hence the denominator is 10
+// Prices are per 1M tokens in dollars, converted to cents
+export function estimatePrice(input_token: number, output_token: number, model: string) {
   let price = 0;
-  if (model == "gpt-3.5-turbo") {
-    price = (prompt_token * 0.0015 + output_token * 0.002) / 10;
-  } else if (model == "gpt-3.5-turbo-16k") {
-    price = (prompt_token * 0.003 + output_token * 0.004) / 10;
-  } else if (model == "gpt-4") {
-    price = (prompt_token * 0.03 + output_token * 0.06) / 10;
-  } else if (model == "gpt-4-32k-0613") {
-    price = (prompt_token * 0.03 + output_token * 0.06) / 10;
-  } else if (model == "gpt-4-turbo-preview") {
-    price = (prompt_token * 0.01 + output_token * 0.03) / 10;
+
+  if (model == "gpt-5.2") {
+    price = (input_token * 1.75 + output_token * 14.00) / 10000;
+  } else if (model == "gpt-5.1") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5-mini") {
+    price = (input_token * 0.25 + output_token * 2.00) / 10000;
+  } else if (model == "gpt-5-nano") {
+    price = (input_token * 0.05 + output_token * 0.40) / 10000;
+  } else if (model == "gpt-5.2-chat-latest") {
+    price = (input_token * 1.75 + output_token * 14.00) / 10000;
+  } else if (model == "gpt-5.1-chat-latest") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5-chat-latest") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5.2-codex") {
+    price = (input_token * 1.75 + output_token * 14.00) / 10000;
+  } else if (model == "gpt-5.1-codex-max") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5.1-codex") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5-codex") {
+    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+  } else if (model == "gpt-5.2-pro") {
+    price = (input_token * 21.00 + output_token * 168.00) / 10000;
+  } else if (model == "gpt-5-pro") {
+    price = (input_token * 15.00 + output_token * 120.00) / 10000;
   } else {
     return -1;
   }
-  return naiveRound(price, 2);
+  return naiveRound(price, 5);
 }
 
 export async function runAppleScriptSilently(appleScript: string) {
