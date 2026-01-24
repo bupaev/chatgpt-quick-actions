@@ -9,18 +9,10 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { global_model, enable_streaming, openai, using_azure } from "./api";
-import { countToken, estimatePrice, sendToSideNote } from "./util";
-import { Stream } from "openai/streaming";
+import { global_model, openai } from "./api";
+import { countToken, estimatePrice, sentToSideNote } from "./util";
 
-export default function ResultView(props: {
-  sys_prompt: string,
-  selected_text?: string, // If defined, uses this as selected text
-  user_extra_msg?: string, // If not empty, appends this to the user message
-  model_override: string,
-  toast_title: string,
-}) {
-  const { sys_prompt, selected_text, user_extra_msg, model_override, toast_title } = props;
+export default function ResultView(prompt: string, model_override: string, toast_title: string) {
   const pref = getPreferenceValues();
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
@@ -34,72 +26,60 @@ export default function ResultView(props: {
     const now = new Date();
     let duration = 0;
     const toast = await showToast(Toast.Style.Animated, toast_title);
+    let selectedText = "";
 
-    async function getChatResponse(prompt: string, selectedText: string) {
-      try {
-        const streamOrCompletion = await openai.chat.completions.create({
-          model: model,
-          messages: [
-            { role: "system", content: prompt },
-            { role: "user", content: selectedText + (user_extra_msg ? `\n\n${user_extra_msg}` : '') },
-          ],
-          stream: enable_streaming,
-        });
-        setPromptTokenCount(countToken(prompt + selectedText));
-        return streamOrCompletion;
-      } catch (error) {
-        toast.title = "Error";
-        toast.style = Toast.Style.Failure;
-        setLoading(false);
-        const response_ =
-          "⚠️ Failed to get response from OpenAI. Please check your network connection and API key.\n\n" +
-          (using_azure ? `If using Azure, please make sure you've supplied the config as required by your deployment or try disabling response streaming.\n\n` : '') +
-          `Error Message: \`\`\`${(error as Error).message}\`\`\``;
-        setResponse(response_);
-        return;
-      }
+    try {
+      selectedText = await getSelectedText();
+    } catch (error) {
+      toast.title = "Error";
+      toast.style = Toast.Style.Failure;
+      setLoading(false);
+      setResponse(
+        "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
+      );
+      return;
     }
 
-    let selectedText = selected_text;
-    if (selectedText === undefined) {
-      try {
-        selectedText = await getSelectedText();
-      } catch (error) {
-        console.log(error);
-        toast.title = "Error";
-        toast.style = Toast.Style.Failure;
-        setLoading(false);
-        setResponse(
-          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
-        );
-        return;
-      }
-    }
+    try {
+      const stream = await openai.chat.completions.create({
+        model: model,
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: selectedText },
+        ],
+        stream: true,
+      });
+      setPromptTokenCount(countToken(prompt + selectedText));
 
-    getChatResponse(sys_prompt, selectedText).then(async (resp) => {
-      if (!resp) return;
+      if (!stream) return;
 
       let response_ = "";
-      function appendResponse(part: string) {
-        response_ += part;
-        setResponse(response_);
-        setResponseTokenCount(countToken(response_));
-      }
-
-      if (resp instanceof Stream) {
-        for await (const part of resp) {
-          appendResponse(part.choices[0]?.delta?.content ?? "");
+      for await (const part of stream) {
+        const message = part.choices[0].delta.content;
+        if (message) {
+          response_ += message;
+          setResponse(response_);
+          setResponseTokenCount(countToken(response_));
         }
-      } else {
-        appendResponse(resp.choices[0]?.message?.content ?? "");
+        if (part.choices[0].finish_reason === "stop") {
+          setLoading(false);
+          const done = new Date();
+          duration = (done.getTime() - now.getTime()) / 1000;
+          toast.style = Toast.Style.Success;
+          toast.title = `Finished in ${duration} seconds`;
+          break; // Stream finished
+        }
       }
-
+    } catch (error) {
+      toast.title = "Error";
+      toast.style = Toast.Style.Failure;
       setLoading(false);
-      const done = new Date();
-      duration = (done.getTime() - now.getTime()) / 1000;
-      toast.style = Toast.Style.Success;
-      toast.title = `Finished in ${duration} seconds`;
-    });
+      setResponse(
+        `⚠️ Failed to get response from OpenAI. Please check your network connection and API key. \n\n Error Message: \`\`\`${(error as Error).message
+        }\`\`\``
+      );
+      return;
+    }
   }
 
   async function retry() {
@@ -108,8 +88,8 @@ export default function ResultView(props: {
     getResult();
   }
 
-  async function retryWithGPT4() {
-    setModel("gpt-4");
+  async function retryWithGPT4o() {
+    setModel("gpt-4o");
     setLoading(true);
     setResponse("");
     getResult();
@@ -132,7 +112,7 @@ export default function ResultView(props: {
       <Action
         title="Send to SideNote"
         onAction={async () => {
-          await sendToSideNote(response);
+          await sentToSideNote(response);
         }}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
         icon={Icon.Sidebar}
@@ -147,13 +127,17 @@ export default function ResultView(props: {
       actions={
         !loading && (
           <ActionPanel title="Actions">
-            <Action.CopyToClipboard title="Copy Results" content={response} />
-            <Action.Paste title="Paste Results" content={response} />
+            <Action.Paste title="Replace Selected" content={response} icon={Icon.Pencil} />
+            <Action.CopyToClipboard
+              title="Copy Results"
+              content={response}
+              shortcut={{ modifiers: ["cmd"], key: "enter" }}
+            />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
-            {model != "gpt-4" && (
+            {model != "gpt-4o" && (
               <Action
-                title="Retry with GPT-4"
-                onAction={retryWithGPT4}
+                title="Retry with GPT-4o"
+                onAction={retryWithGPT4o}
                 shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
                 icon={Icon.ArrowNe}
               />
