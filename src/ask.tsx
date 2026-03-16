@@ -75,9 +75,8 @@ export default function AskView() {
         title="Question"
         enableMarkdown
         placeholder={
-          usingContext &&
-          (default_question + ' ') // Raycast will append ellipsis
-          || undefined
+          (usingContext && default_question + " ") || // Raycast will append ellipsis
+          undefined
         }
         value={question}
         error={questionError}
@@ -87,25 +86,23 @@ export default function AskView() {
         }}
         onBlur={setQuestionErrorIfNeeded}
       />
-      {
-        canUseContext === true ? (
-          <Form.Checkbox
-            id="use_selected_text"
-            title="Context"
-            label="Use selected text"
-            value={usingContext}
-            onChange={setUsingContext}
-          />
-        ) : (
-          <Form.Description
-            title="Context"
-            text={
-              // Undefined when we're still trying to get the selection
-              canUseContext === false ? 'No selected text' : 'Getting selected text...'
-            }
-          />
-        )
-      }
+      {canUseContext === true ? (
+        <Form.Checkbox
+          id="use_selected_text"
+          title="Context"
+          label="Use selected text"
+          value={usingContext}
+          onChange={setUsingContext}
+        />
+      ) : (
+        <Form.Description
+          title="Context"
+          text={
+            // Undefined when we're still trying to get the selection
+            canUseContext === false ? "No selected text" : "Getting selected text..."
+          }
+        />
+      )}
     </Form>
   );
 }

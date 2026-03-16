@@ -100,12 +100,21 @@ Each command has a customizable prompt defined in `package.json` under the comma
 
 The list of available AI models is defined in `scripts/models.js`. To update the model list:
 
-1. Edit `scripts/models.js` to add, remove, or reorder models.
-2. Run the script to regenerate the model dropdown entries in `package.json`:
+1. Edit `scripts/models.js` to add, remove, or reorder models (title, value, pricing).
+2. Regenerate the model dropdown entries in `package.json`:
 
    ```bash
-   node scripts/models.js
+   npm run build-package
    ```
+
+3. If you also changed pricing logic, update `src/util.ts` (`estimatePrice`) accordingly.
+4. Rebuild the extension to verify everything compiles:
+
+   ```bash
+   npm run build
+   ```
+
+> **Note**: `npm run build-package` updates the Raycast manifest (`package.json`) — this controls the dropdowns shown in Raycast preferences. `npm run build` compiles the TypeScript source code. Both must be done when adding new models.
 
 #### Adding a New Command
 
