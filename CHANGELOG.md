@@ -4,6 +4,7 @@
 
 - Added latest OpenAI models: GPT-5.4 series (Pro, Thinking, Standard), GPT-5.3 series (Garlic, Instant, Standard), and GPT-4.1 series (Standard, Mini, Nano)
 - Updated pricing for all new models based on March 2026 data
+- Updated advanced reasoning retry option in result view to use GPT-5.4 Thinking
 
 ## [API Pricing] - 2025-06-26
 
