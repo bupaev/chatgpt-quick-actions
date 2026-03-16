@@ -93,7 +93,8 @@ export default function ResultView({
       toast.style = Toast.Style.Failure;
       setLoading(false);
       setResponse(
-        `⚠️ Failed to get response from OpenAI. Please check your network connection and API key. \n\n Error Message: \`\`\`${(error as Error).message
+        `⚠️ Failed to get response from OpenAI. Please check your network connection and API key. \n\n Error Message: \`\`\`${
+          (error as Error).message
         }\`\`\``
       );
       return;
@@ -106,8 +107,8 @@ export default function ResultView({
     getResult();
   }
 
-  async function retryWithGPT5_4Thinking() {
-    setModel("gpt-5.4-thinking");
+  async function retryWithGPT5_4() {
+    setModel("gpt-5.4");
     setLoading(true);
     setResponse("");
     getResult();
@@ -152,10 +153,10 @@ export default function ResultView({
               shortcut={{ modifiers: ["cmd"], key: "enter" }}
             />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
-            {model != "gpt-5.4-thinking" && (
+            {model != "gpt-5.4" && (
               <Action
-                title="Retry with GPT-5.4 Thinking"
-                onAction={retryWithGPT5_4Thinking}
+                title="Retry with GPT-5.4"
+                onAction={retryWithGPT5_4}
                 shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
                 icon={Icon.ArrowNe}
               />

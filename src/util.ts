@@ -31,44 +31,24 @@ export function estimatePrice(input_token: number, output_token: number, model: 
 
   if (model == "gpt-5.4-pro") {
     price = (input_token * 30.0 + output_token * 180.0) / 10000;
-  } else if (model == "gpt-5.4-thinking" || model == "gpt-5.4") {
+  } else if (model == "gpt-5.4" || model == "o3") {
     price = (input_token * 2.5 + output_token * 15.0) / 10000;
-  } else if (model == "gpt-5.3-garlic" || model == "gpt-5.3-instant" || model == "gpt-5.3") {
-    price = (input_token * 0.875 + output_token * 7.0) / 10000;
-  } else if (model == "gpt-5.2") {
-    price = (input_token * 1.75 + output_token * 14.00) / 10000;
-  } else if (model == "gpt-5.1") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
   } else if (model == "gpt-5") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
+    price = (input_token * 1.25 + output_token * 10.0) / 10000;
   } else if (model == "gpt-5-mini") {
-    price = (input_token * 0.25 + output_token * 2.00) / 10000;
+    price = (input_token * 0.25 + output_token * 2.0) / 10000;
   } else if (model == "gpt-5-nano") {
-    price = (input_token * 0.05 + output_token * 0.40) / 10000;
+    price = (input_token * 0.05 + output_token * 0.4) / 10000;
+  } else if (model == "o1-pro") {
+    price = (input_token * 15.0 + output_token * 120.0) / 10000;
+  } else if (model == "o1") {
+    price = (input_token * 1.25 + output_token * 10.0) / 10000;
   } else if (model == "gpt-4.1") {
     price = (input_token * 3.0 + output_token * 12.0) / 10000;
   } else if (model == "gpt-4.1-mini") {
     price = (input_token * 0.8 + output_token * 3.2) / 10000;
   } else if (model == "gpt-4.1-nano") {
     price = (input_token * 0.2 + output_token * 0.8) / 10000;
-  } else if (model == "gpt-5.2-chat-latest") {
-    price = (input_token * 1.75 + output_token * 14.00) / 10000;
-  } else if (model == "gpt-5.1-chat-latest") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
-  } else if (model == "gpt-5-chat-latest") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
-  } else if (model == "gpt-5.2-codex") {
-    price = (input_token * 1.75 + output_token * 14.00) / 10000;
-  } else if (model == "gpt-5.1-codex-max") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
-  } else if (model == "gpt-5.1-codex") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
-  } else if (model == "gpt-5-codex") {
-    price = (input_token * 1.25 + output_token * 10.00) / 10000;
-  } else if (model == "gpt-5.2-pro") {
-    price = (input_token * 21.00 + output_token * 168.00) / 10000;
-  } else if (model == "gpt-5-pro") {
-    price = (input_token * 15.00 + output_token * 120.00) / 10000;
   } else {
     return -1;
   }
