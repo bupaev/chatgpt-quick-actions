@@ -88,8 +88,8 @@ export default function ResultView(prompt: string, model_override: string, toast
     getResult();
   }
 
-  async function retryWithGPT4o() {
-    setModel("gpt-4o");
+  async function retryWithGPT5() {
+    setModel("gpt-5.2-pro");
     setLoading(true);
     setResponse("");
     getResult();
@@ -134,10 +134,10 @@ export default function ResultView(prompt: string, model_override: string, toast
               shortcut={{ modifiers: ["cmd"], key: "enter" }}
             />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
-            {model != "gpt-4o" && (
+            {model != "gpt-5.2-pro" && (
               <Action
-                title="Retry with GPT-4o"
-                onAction={retryWithGPT4o}
+                title="Retry with GPT-5.2 Pro"
+                onAction={retryWithGPT5}
                 shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
                 icon={Icon.ArrowNe}
               />

@@ -1,5 +1,29 @@
 const models = [
   {
+    title: "GPT-5.4 Pro",
+    value: "gpt-5.4-pro"
+  },
+  {
+    title: "GPT-5.4 Thinking",
+    value: "gpt-5.4-thinking"
+  },
+  {
+    title: "GPT-5.4",
+    value: "gpt-5.4"
+  },
+  {
+    title: "GPT-5.3 Garlic",
+    value: "gpt-5.3-garlic"
+  },
+  {
+    title: "GPT-5.3 Instant",
+    value: "gpt-5.3-instant"
+  },
+  {
+    title: "GPT-5.3",
+    value: "gpt-5.3"
+  },
+  {
     title: "GPT-5.2",
     value: "gpt-5.2"
   },
@@ -18,6 +42,18 @@ const models = [
   {
     title: "GPT-5 Nano",
     value: "gpt-5-nano"
+  },
+  {
+    title: "GPT-4.1",
+    value: "gpt-4.1"
+  },
+  {
+    title: "GPT-4.1 Mini",
+    value: "gpt-4.1-mini"
+  },
+  {
+    title: "GPT-4.1 Nano",
+    value: "gpt-4.1-nano"
   },
   {
     title: "GPT-5.2 Chat Latest",

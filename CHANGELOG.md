@@ -1,5 +1,10 @@
 # ChatGPT Quick Actions Changelog
 
+## [Models Update] - 2026-03-16
+
+- Added latest OpenAI models: GPT-5.4 series (Pro, Thinking, Standard), GPT-5.3 series (Garlic, Instant, Standard), and GPT-4.1 series (Standard, Mini, Nano)
+- Updated pricing for all new models based on March 2026 data
+
 ## [API Pricing] - 2025-06-26
 
 - Updated [API pricing information](https://platform.openai.com/docs/pricing) and conversion fix
