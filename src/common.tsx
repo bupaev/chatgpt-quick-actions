@@ -12,7 +12,21 @@ import { useEffect, useState } from "react";
 import { global_model, openai } from "./api";
 import { countToken, estimatePrice, sentToSideNote } from "./util";
 
-export default function ResultView(prompt: string, model_override: string, toast_title: string) {
+interface ResultViewProps {
+  sys_prompt: string;
+  model_override: string;
+  toast_title: string;
+  user_extra_msg?: string;
+  selected_text?: string;
+}
+
+export default function ResultView({
+  sys_prompt,
+  model_override,
+  toast_title,
+  user_extra_msg,
+  selected_text,
+}: ResultViewProps) {
   const pref = getPreferenceValues();
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
@@ -27,29 +41,33 @@ export default function ResultView(prompt: string, model_override: string, toast
     let duration = 0;
     const toast = await showToast(Toast.Style.Animated, toast_title);
     let selectedText = "";
-
-    try {
-      selectedText = await getSelectedText();
-    } catch (error) {
-      toast.title = "Error";
-      toast.style = Toast.Style.Failure;
-      setLoading(false);
-      setResponse(
-        "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
-      );
-      return;
+    if (selected_text !== undefined) {
+      selectedText = selected_text;
+    } else {
+      try {
+        selectedText = await getSelectedText();
+      } catch (error) {
+        toast.title = "Error";
+        toast.style = Toast.Style.Failure;
+        setLoading(false);
+        setResponse(
+          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
+        );
+        return;
+      }
     }
 
     try {
+      const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
       const stream = await openai.chat.completions.create({
         model: model,
         messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: selectedText },
+          { role: "system", content: sys_prompt },
+          { role: "user", content: user_content },
         ],
         stream: true,
       });
-      setPromptTokenCount(countToken(prompt + selectedText));
+      setPromptTokenCount(countToken(sys_prompt + user_content));
 
       if (!stream) return;
 
