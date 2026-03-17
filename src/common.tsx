@@ -8,7 +8,7 @@ import {
   Toast,
   Icon,
 } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { global_model, openai } from "./api";
 import { countToken, estimatePrice, sentToSideNote } from "./util";
 
@@ -35,8 +35,9 @@ export default function ResultView({
   const [cumulative_tokens, setCumulativeTokens] = useState(0);
   const [cumulative_cost, setCumulativeCost] = useState(0);
   const [model, setModel] = useState(model_override == "global" ? global_model : model_override);
+  const generation = useRef(0);
 
-  async function getResult() {
+  async function getResult(gen: number) {
     const now = new Date();
     let duration = 0;
     const toast = await showToast(Toast.Style.Animated, toast_title);
@@ -47,6 +48,7 @@ export default function ResultView({
       try {
         selectedText = await getSelectedText();
       } catch (error) {
+        if (gen !== generation.current) return;
         toast.title = "Error";
         toast.style = Toast.Style.Failure;
         setLoading(false);
@@ -56,6 +58,8 @@ export default function ResultView({
         return;
       }
     }
+
+    if (gen !== generation.current) return;
 
     try {
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
@@ -67,12 +71,14 @@ export default function ResultView({
         ],
         stream: true,
       });
+      if (gen !== generation.current) return;
       setPromptTokenCount(countToken(sys_prompt + user_content));
 
       if (!stream) return;
 
       let response_ = "";
       for await (const part of stream) {
+        if (gen !== generation.current) return;
         const message = part.choices[0].delta.content;
         if (message) {
           response_ += message;
@@ -89,6 +95,7 @@ export default function ResultView({
         }
       }
     } catch (error) {
+      if (gen !== generation.current) return;
       toast.title = "Error";
       toast.style = Toast.Style.Failure;
       setLoading(false);
@@ -102,20 +109,26 @@ export default function ResultView({
   }
 
   async function retry() {
+    const gen = ++generation.current;
     setLoading(true);
     setResponse("");
-    getResult();
+    getResult(gen);
   }
 
   async function retryWithGPT5_4() {
+    const gen = ++generation.current;
     setModel("gpt-5.4");
     setLoading(true);
     setResponse("");
-    getResult();
+    getResult(gen);
   }
 
   useEffect(() => {
-    getResult();
+    const gen = ++generation.current;
+    getResult(gen);
+    return () => {
+      generation.current++; // invalidate this generation on cleanup
+    };
   }, []);
 
   useEffect(() => {
