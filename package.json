@@ -108,7 +108,7 @@
           "title": "Proofread Prompt",
           "description": "The prompt for the proofread command",
           "type": "textfield",
-          "default": "Fix the grammar and typo of the text, only return the given text. Respect line breaks.",
+          "default": "Fix the grammar and typos in the text. Only return the given text. Respect line breaks.",
           "required": false
         },
         {
@@ -510,7 +510,7 @@
           "title": "Proofread Prompt",
           "description": "The prompt for the proofread command (no UI)",
           "type": "textfield",
-          "default": "Fix the grammar and typo of the text, only return the given text. Respect line breaks.",
+          "default": "Fix the grammar and typos in the text. Only return the given text. Respect line breaks.",
           "required": false
         },
         {
@@ -1084,6 +1084,22 @@
       "default": "google/gemini-2.5-flash",
       "title": "OpenRouter Model ID",
       "placeholder": "google/gemini-2.5-flash"
+    },
+    {
+      "name": "openrouterInputPrice",
+      "description": "Manual OpenRouter input price per 1M tokens in USD, used for cost estimates",
+      "type": "textfield",
+      "required": false,
+      "title": "OpenRouter Input Price",
+      "placeholder": "e.g. 0.15"
+    },
+    {
+      "name": "openrouterOutputPrice",
+      "description": "Manual OpenRouter output price per 1M tokens in USD, used for cost estimates",
+      "type": "textfield",
+      "required": false,
+      "title": "OpenRouter Output Price",
+      "placeholder": "e.g. 0.60"
     },
     {
       "name": "sidenote",

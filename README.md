@@ -119,14 +119,14 @@ The list of available AI models is defined in `scripts/models.js`. To update the
    npm run build-package
    ```
 
-3. If you also changed OpenAI pricing logic, update `src/util.ts` (`estimatePrice`) accordingly.
+3. If you also changed pricing logic, update `src/util.ts` (`estimatePrice`) accordingly.
 4. Rebuild the extension to verify everything compiles:
 
    ```bash
    npm run build
    ```
 
-> **Note**: `npm run build-package` updates the OpenAI model dropdowns in the Raycast manifest (`package.json`). OpenRouter models use free-form model IDs in preferences. `npm run build` compiles the TypeScript source code.
+> **Note**: `npm run build-package` updates the OpenAI model dropdowns in the Raycast manifest (`package.json`). OpenRouter models use free-form model IDs in preferences, and OpenRouter cost estimates use the manual input/output prices you set in preferences.
 
 #### Adding a New Command
 

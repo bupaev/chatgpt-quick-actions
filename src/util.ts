@@ -25,9 +25,37 @@ export function countToken(content: string) {
   return encode(content).length;
 }
 
+interface EstimatePriceOptions {
+  provider?: "openai" | "openrouter";
+  openrouterInputPrice?: string;
+  openrouterOutputPrice?: string;
+}
+
+export function formatPriceUSD(priceInCents: number) {
+  return `$${(priceInCents / 100).toFixed(6)}`;
+}
+
 // Prices are per 1M tokens in dollars, converted to cents
-export function estimatePrice(input_token: number, output_token: number, model: string) {
+export function estimatePrice(
+  input_token: number,
+  output_token: number,
+  model: string,
+  options?: EstimatePriceOptions
+) {
   let price = 0;
+  const provider = options?.provider ?? "openai";
+
+  if (provider === "openrouter") {
+    const inputPrice = Number(options?.openrouterInputPrice);
+    const outputPrice = Number(options?.openrouterOutputPrice);
+
+    if (!Number.isFinite(inputPrice) || !Number.isFinite(outputPrice) || inputPrice < 0 || outputPrice < 0) {
+      return -1;
+    }
+
+    price = (input_token * inputPrice + output_token * outputPrice) / 10000;
+    return naiveRound(price, 5);
+  }
 
   if (model == "gpt-5.4-pro") {
     price = (input_token * 30.0 + output_token * 180.0) / 10000;

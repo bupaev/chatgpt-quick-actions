@@ -10,7 +10,7 @@ import {
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
-import { countToken, estimatePrice, sentToSideNote } from "./util";
+import { countToken, estimatePrice, formatPriceUSD, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
@@ -29,7 +29,11 @@ export default function ResultView({
   user_extra_msg,
   selected_text,
 }: ResultViewProps) {
-  const pref = getPreferenceValues();
+  const pref = getPreferenceValues<{
+    sidenote?: boolean;
+    openrouterInputPrice?: string;
+    openrouterOutputPrice?: string;
+  }>();
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
   const [response, setResponse] = useState("");
@@ -161,12 +165,24 @@ export default function ResultView({
   useEffect(() => {
     if (loading == false) {
       setCumulativeTokens((tokens) => tokens + prompt_token_count + response_token_count);
-      const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model);
+      const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
+        provider,
+        openrouterInputPrice: pref.openrouterInputPrice,
+        openrouterOutputPrice: pref.openrouterOutputPrice,
+      });
       if (estimatedCost >= 0) {
         setCumulativeCost((cost) => cost + estimatedCost);
       }
     }
-  }, [loading, model, prompt_token_count, response_token_count]);
+  }, [
+    loading,
+    model,
+    pref.openrouterInputPrice,
+    pref.openrouterOutputPrice,
+    prompt_token_count,
+    provider,
+    response_token_count,
+  ]);
 
   let sidenote = undefined;
   if (pref.sidenote) {
@@ -182,7 +198,11 @@ export default function ResultView({
     );
   }
 
-  const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model);
+  const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
+    provider,
+    openrouterInputPrice: pref.openrouterInputPrice,
+    openrouterOutputPrice: pref.openrouterOutputPrice,
+  });
 
   return (
     <Detail
@@ -220,11 +240,14 @@ export default function ResultView({
           <Detail.Metadata.Label title="Total Tokens" text={(prompt_token_count + response_token_count).toString()} />
           <Detail.Metadata.Label
             title="Total Cost"
-            text={estimatedCost >= 0 ? estimatedCost + " cents" : "Unavailable"}
+            text={estimatedCost >= 0 ? formatPriceUSD(estimatedCost) : "Unavailable"}
           />
           <Detail.Metadata.Separator />
-          <Detail.Metadata.Label title="Culmulative Tokens" text={cumulative_tokens.toString()} />
-          <Detail.Metadata.Label title="Culmulative Cost" text={cumulative_cost.toString() + " cents"} />
+          <Detail.Metadata.Label title="Cumulative Tokens" text={cumulative_tokens.toString()} />
+          <Detail.Metadata.Label
+            title="Cumulative Cost"
+            text={cumulative_cost >= 0 ? formatPriceUSD(cumulative_cost) : "Unavailable"}
+          />
         </Detail.Metadata>
       }
     />
