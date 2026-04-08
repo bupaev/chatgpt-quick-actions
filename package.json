@@ -86,6 +86,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_summarize",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -160,6 +168,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_rewrite",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -234,6 +250,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_refine",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -308,6 +332,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_custom",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -374,6 +406,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_execute",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -440,6 +480,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_preview",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -514,6 +562,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_transform",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     },
@@ -588,6 +644,14 @@
               "value": "gpt-4.1-nano"
             }
           ]
+        },
+        {
+          "name": "openrouter_model_transform_preview",
+          "description": "Override the global OpenRouter model for this command",
+          "type": "textfield",
+          "required": false,
+          "title": "OpenRouter Model Override",
+          "placeholder": "Follow global OpenRouter model"
         }
       ]
     }
@@ -600,11 +664,36 @@
   },
   "preferences": [
     {
+      "name": "apiProvider",
+      "description": "API provider to use for your commands",
+      "type": "dropdown",
+      "required": true,
+      "title": "API Provider",
+      "default": "openai",
+      "data": [
+        {
+          "title": "OpenAI",
+          "value": "openai"
+        },
+        {
+          "title": "OpenRouter",
+          "value": "openrouter"
+        }
+      ]
+    },
+    {
       "name": "apikey",
       "description": "Your OpenAI API Key",
       "type": "password",
       "required": true,
       "title": "OpenAI API Key"
+    },
+    {
+      "name": "openrouterApiKey",
+      "description": "Your OpenRouter API Key",
+      "type": "password",
+      "required": false,
+      "title": "OpenRouter API Key"
     },
     {
       "name": "model",
@@ -658,6 +747,15 @@
       ],
       "required": true,
       "title": "OpenAI Model"
+    },
+    {
+      "name": "openrouterModel",
+      "description": "OpenRouter model ID to use when OpenRouter is selected",
+      "type": "textfield",
+      "required": false,
+      "default": "google/gemini-2.5-flash",
+      "title": "OpenRouter Model ID",
+      "placeholder": "google/gemini-2.5-flash"
     },
     {
       "name": "sidenote",

@@ -9,12 +9,13 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { global_model, openai } from "./api";
+import { getClient, getProvider, getProviderLabel, resolveModel } from "./api";
 import { countToken, estimatePrice, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
   model_override: string;
+  openrouter_model_override?: string;
   toast_title: string;
   user_extra_msg?: string;
   selected_text?: string;
@@ -23,18 +24,27 @@ interface ResultViewProps {
 export default function ResultView({
   sys_prompt,
   model_override,
+  openrouter_model_override,
   toast_title,
   user_extra_msg,
   selected_text,
 }: ResultViewProps) {
   const pref = getPreferenceValues();
+  const provider = getProvider();
+  const providerLabel = getProviderLabel(provider);
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [cumulative_tokens, setCumulativeTokens] = useState(0);
   const [cumulative_cost, setCumulativeCost] = useState(0);
-  const [model, setModel] = useState(model_override == "global" ? global_model : model_override);
+  const [model, setModel] = useState(() => {
+    try {
+      return resolveModel(model_override, openrouter_model_override);
+    } catch {
+      return "";
+    }
+  });
   const generation = useRef(0);
 
   async function getResult(gen: number) {
@@ -62,9 +72,11 @@ export default function ResultView({
     if (gen !== generation.current) return;
 
     try {
+      const resolvedModel = resolveModel(model_override, openrouter_model_override);
+      setModel(resolvedModel);
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
-      const stream = await openai.chat.completions.create({
-        model: model,
+      const stream = await getClient(provider).chat.completions.create({
+        model: resolvedModel,
         messages: [
           { role: "system", content: sys_prompt },
           { role: "user", content: user_content },
@@ -100,7 +112,7 @@ export default function ResultView({
       toast.style = Toast.Style.Failure;
       setLoading(false);
       setResponse(
-        `⚠️ Failed to get response from OpenAI. Please check your network connection and API key. \n\n Error Message: \`\`\`${
+        `⚠️ Failed to get response from ${providerLabel}. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
           (error as Error).message
         }\`\`\``
       );
@@ -110,6 +122,11 @@ export default function ResultView({
 
   async function retry() {
     const gen = ++generation.current;
+    try {
+      setModel(resolveModel(model_override, openrouter_model_override));
+    } catch {
+      setModel("");
+    }
     setLoading(true);
     setResponse("");
     getResult(gen);
@@ -133,10 +150,13 @@ export default function ResultView({
 
   useEffect(() => {
     if (loading == false) {
-      setCumulativeTokens(cumulative_tokens + prompt_token_count + response_token_count);
-      setCumulativeCost(cumulative_cost + estimatePrice(prompt_token_count, response_token_count, model));
+      setCumulativeTokens((tokens) => tokens + prompt_token_count + response_token_count);
+      const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model);
+      if (estimatedCost >= 0) {
+        setCumulativeCost((cost) => cost + estimatedCost);
+      }
     }
-  }, [loading]);
+  }, [loading, model, prompt_token_count, response_token_count]);
 
   let sidenote = undefined;
   if (pref.sidenote) {
@@ -152,6 +172,8 @@ export default function ResultView({
     );
   }
 
+  const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model);
+
   return (
     <Detail
       markdown={response}
@@ -166,7 +188,7 @@ export default function ResultView({
               shortcut={{ modifiers: ["cmd"], key: "enter" }}
             />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
-            {model != "gpt-5.4" && (
+            {provider === "openai" && model != "gpt-5.4" && (
               <Action
                 title="Retry with GPT-5.4"
                 onAction={retryWithGPT5_4}
@@ -180,6 +202,7 @@ export default function ResultView({
       }
       metadata={
         <Detail.Metadata>
+          <Detail.Metadata.Label title="Provider" text={providerLabel} />
           <Detail.Metadata.Label title="Current Model" text={model} />
           <Detail.Metadata.Label title="Prompt Tokens" text={prompt_token_count.toString()} />
           <Detail.Metadata.Label title="Response Tokens" text={response_token_count.toString()} />
@@ -187,7 +210,7 @@ export default function ResultView({
           <Detail.Metadata.Label title="Total Tokens" text={(prompt_token_count + response_token_count).toString()} />
           <Detail.Metadata.Label
             title="Total Cost"
-            text={estimatePrice(prompt_token_count, response_token_count, model).toString() + " cents"}
+            text={estimatedCost >= 0 ? estimatedCost + " cents" : "Unavailable"}
           />
           <Detail.Metadata.Separator />
           <Detail.Metadata.Label title="Culmulative Tokens" text={cumulative_tokens.toString()} />

@@ -1,6 +1,6 @@
 # ChatGPT Quick Actions
 
-A [Raycast](https://www.raycast.com/) extension that performs one-shot actions (polish writing, summarize text, etc.) with ChatGPT. A working OpenAI API key is required.
+A [Raycast](https://www.raycast.com/) extension that performs one-shot actions (polish writing, summarize text, etc.) with ChatGPT or OpenRouter. A working OpenAI API key or OpenRouter API key is required.
 
 <a title="Install chatgpt-quick-actions Raycast Extension" href="https://www.raycast.com/alanzchen/chatgpt-quick-actions"><img src="https://www.raycast.com/alanzchen/chatgpt-quick-actions/install_button@2x.png" height="64" alt="" style="height: 64px;"></a>
 
@@ -11,20 +11,21 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 - Results stream in real time
 - Supports keyboard binding with specific command
 - Supports custom prompt for each action
-- Specify a global preferred model or customize preferred model for each command
+- Supports OpenAI and OpenRouter through a global provider switch
+- Specify a global preferred model or customize the preferred model for each command
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| **Summarize** | Summarize selected text |
-| **Rewrite** | Rewrite selected text with an academic tone |
-| **Refine** | Refine writing and correct grammar mistakes |
-| **Custom Action** | Ask ChatGPT based on a custom prompt |
-| **Execute** | Replace selected text with ChatGPT output |
-| **Preview** | Use selected text as ChatGPT input and preview output |
-| **Transform** | Replace selected text with ChatGPT output, based on a prompt entered at runtime |
-| **Ask** | Ask ChatGPT a question using your input as context |
+| Command           | Description                                                                     |
+| ----------------- | ------------------------------------------------------------------------------- |
+| **Summarize**     | Summarize selected text                                                         |
+| **Rewrite**       | Rewrite selected text with an academic tone                                     |
+| **Refine**        | Refine writing and correct grammar mistakes                                     |
+| **Custom Action** | Ask ChatGPT based on a custom prompt                                            |
+| **Execute**       | Replace selected text with ChatGPT output                                       |
+| **Preview**       | Use selected text as ChatGPT input and preview output                           |
+| **Transform**     | Replace selected text with ChatGPT output, based on a prompt entered at runtime |
+| **Ask**           | Ask ChatGPT a question using your input as context                              |
 
 ## Tips
 
@@ -66,14 +67,17 @@ This is a Raycast extension built with [TypeScript](https://www.typescriptlang.o
 
    This will build the extension and start it in development mode with hot reloading. Raycast will open automatically and show your extension under the **Development** section in the root search.
 
-4. Enter your **OpenAI API Key** in the extension preferences when prompted.
+4. Open the extension preferences and choose your provider:
+
+   - `OpenAI`: enter your **OpenAI API Key** and select an **OpenAI Model**
+   - `OpenRouter`: enter your **OpenRouter API Key** and set an **OpenRouter Model ID** such as `google/gemini-2.5-flash`
 
 ### Project Structure
 
 ```
 chatgpt-quick-actions/
 ├── src/                  # Source code
-│   ├── api.ts            # OpenAI API client
+│   ├── api.ts            # OpenAI/OpenRouter API client selection
 │   ├── common.tsx        # Shared UI components and logic
 │   ├── util.ts           # Helper utilities and model definitions
 │   ├── summarize.tsx     # Summarize command
@@ -100,21 +104,21 @@ Each command has a customizable prompt defined in `package.json` under the comma
 
 The list of available AI models is defined in `scripts/models.js`. To update the model list:
 
-1. Edit `scripts/models.js` to add, remove, or reorder models (title, value, pricing).
+1. Edit `scripts/models.js` to add, remove, or reorder OpenAI models (title, value, pricing).
 2. Regenerate the model dropdown entries in `package.json`:
 
    ```bash
    npm run build-package
    ```
 
-3. If you also changed pricing logic, update `src/util.ts` (`estimatePrice`) accordingly.
+3. If you also changed OpenAI pricing logic, update `src/util.ts` (`estimatePrice`) accordingly.
 4. Rebuild the extension to verify everything compiles:
 
    ```bash
    npm run build
    ```
 
-> **Note**: `npm run build-package` updates the Raycast manifest (`package.json`) — this controls the dropdowns shown in Raycast preferences. `npm run build` compiles the TypeScript source code. Both must be done when adding new models.
+> **Note**: `npm run build-package` updates the OpenAI model dropdowns in the Raycast manifest (`package.json`). OpenRouter models use free-form model IDs in preferences. `npm run build` compiles the TypeScript source code.
 
 #### Adding a New Command
 
