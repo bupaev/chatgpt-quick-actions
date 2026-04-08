@@ -16,16 +16,20 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 
 ## Available Commands
 
-| Command           | Description                                                                     |
-| ----------------- | ------------------------------------------------------------------------------- |
-| **Summarize**     | Summarize selected text                                                         |
-| **Rewrite**       | Rewrite selected text with an academic tone                                     |
-| **Refine**        | Refine writing and correct grammar mistakes                                     |
-| **Custom Action** | Ask ChatGPT based on a custom prompt                                            |
-| **Execute**       | Replace selected text with ChatGPT output                                       |
-| **Preview**       | Use selected text as ChatGPT input and preview output                           |
-| **Transform**     | Replace selected text with ChatGPT output, based on a prompt entered at runtime |
-| **Ask**           | Ask ChatGPT a question using your input as context                              |
+| Command               | Description                                                                     |
+| --------------------- | ------------------------------------------------------------------------------- |
+| **Summarize**         | Summarize selected text                                                         |
+| **Proofread**         | Proofread selected text                                                         |
+| **Rewrite**           | Rewrite selected text with an academic tone                                     |
+| **Refine**            | Refine writing and correct grammar mistakes                                     |
+| **Custom Action**     | Ask ChatGPT based on a custom prompt                                            |
+| **Execute**           | Replace selected text with ChatGPT output                                       |
+| **Proofread (no UI)** | Proofread and replace selected text without opening a preview                   |
+| **Rewrite (no UI)**   | Rewrite and replace selected text without opening a preview                     |
+| **Refine (no UI)**    | Refine and replace selected text without opening a preview                      |
+| **Preview**           | Use selected text as ChatGPT input and preview output                           |
+| **Transform**         | Replace selected text with ChatGPT output, based on a prompt entered at runtime |
+| **Ask**               | Ask ChatGPT a question using your input as context                              |
 
 ## Tips
 
@@ -81,8 +85,12 @@ chatgpt-quick-actions/
 │   ├── common.tsx        # Shared UI components and logic
 │   ├── util.ts           # Helper utilities and model definitions
 │   ├── summarize.tsx     # Summarize command
+│   ├── proofread.tsx     # Proofread command
 │   ├── rewrite.tsx       # Rewrite command
 │   ├── refine.tsx        # Refine command
+│   ├── proofread-no-ui.ts # Proofread command without preview
+│   ├── rewrite-no-ui.ts  # Rewrite command without preview
+│   ├── refine-no-ui.ts   # Refine command without preview
 │   ├── custom.tsx        # Custom Action command
 │   ├── execute.ts        # Execute command
 │   ├── preview.tsx       # Preview command

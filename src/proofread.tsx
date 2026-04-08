@@ -2,12 +2,12 @@ import { getPreferenceValues } from "@raycast/api";
 import ResultView from "./common";
 
 const prefs = getPreferenceValues();
-const prompt = prefs.prompt_refine;
-const model_override = prefs.model_refine;
-const openrouter_model_override = prefs.openrouter_model_refine;
-const toast_title = "Refining...";
+const prompt = prefs.prompt_proofread;
+const model_override = prefs.model_proofread;
+const openrouter_model_override = prefs.openrouter_model_proofread;
+const toast_title = "Proofreading...";
 
-export default function Refine() {
+export default function Proofread() {
   return (
     <ResultView
       sys_prompt={prompt}
