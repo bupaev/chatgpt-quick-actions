@@ -1,5 +1,5 @@
 import { Clipboard, getSelectedText, showHUD } from "@raycast/api";
-import { getClient, getProviderLabel, resolveModel } from "./api";
+import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
 
 interface RunNoUICommandProps {
   action: string;
@@ -25,10 +25,10 @@ export async function runNoUICommand({
     return;
   }
 
-  const providerLabel = getProviderLabel();
-  const model = resolveModel(model_override, openrouter_model_override);
+  const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+  const providerLabel = getProviderLabel(requestConfig.provider);
 
-  await showHUD(`${action} with ${providerLabel} model ${model}...`);
+  await showHUD(`${action} with ${providerLabel} model ${requestConfig.model}...`);
 
   try {
     const messages = prompt
@@ -38,8 +38,8 @@ export async function runNoUICommand({
         ]
       : [{ role: "user" as const, content: selectedText }];
 
-    const response = await getClient().chat.completions.create({
-      model,
+    const response = await getClient(requestConfig.provider).chat.completions.create({
+      model: requestConfig.model,
       messages,
     });
 

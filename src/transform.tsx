@@ -1,5 +1,5 @@
 import { Clipboard, getPreferenceValues, getSelectedText, showHUD } from "@raycast/api";
-import { getClient, getProviderLabel, resolveModel } from "./api";
+import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
 
 export default async function Command(props: { arguments: { prompt: string } }) {
   const { prompt } = props.arguments;
@@ -7,13 +7,13 @@ export default async function Command(props: { arguments: { prompt: string } }) 
   const prefs = getPreferenceValues();
   const model_override = prefs.model_transform;
   const openrouter_model_override = prefs.openrouter_model_transform;
-  const model = resolveModel(model_override, openrouter_model_override);
-  const providerLabel = getProviderLabel();
+  const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+  const providerLabel = getProviderLabel(requestConfig.provider);
 
-  await showHUD(`Transforming with ${providerLabel} model ${model}...`);
+  await showHUD(`Transforming with ${providerLabel} model ${requestConfig.model}...`);
   try {
-    const res = await getClient().chat.completions.create({
-      model,
+    const res = await getClient(requestConfig.provider).chat.completions.create({
+      model: requestConfig.model,
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: selectedText },

@@ -9,7 +9,7 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getProvider, getProviderLabel, resolveModel } from "./api";
+import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
 import { countToken, estimatePrice, sentToSideNote } from "./util";
 
 interface ResultViewProps {
@@ -30,21 +30,27 @@ export default function ResultView({
   selected_text,
 }: ResultViewProps) {
   const pref = getPreferenceValues();
-  const provider = getProvider();
-  const providerLabel = getProviderLabel(provider);
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [cumulative_tokens, setCumulativeTokens] = useState(0);
   const [cumulative_cost, setCumulativeCost] = useState(0);
+  const [provider, setProvider] = useState(() => {
+    try {
+      return resolveRequestConfig(model_override, openrouter_model_override).provider;
+    } catch {
+      return "openai" as const;
+    }
+  });
   const [model, setModel] = useState(() => {
     try {
-      return resolveModel(model_override, openrouter_model_override);
+      return resolveRequestConfig(model_override, openrouter_model_override).model;
     } catch {
       return "";
     }
   });
+  const providerLabel = getProviderLabel(provider);
   const generation = useRef(0);
 
   async function getResult(gen: number) {
@@ -72,11 +78,12 @@ export default function ResultView({
     if (gen !== generation.current) return;
 
     try {
-      const resolvedModel = resolveModel(model_override, openrouter_model_override);
-      setModel(resolvedModel);
+      const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+      setProvider(requestConfig.provider);
+      setModel(requestConfig.model);
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
-      const stream = await getClient(provider).chat.completions.create({
-        model: resolvedModel,
+      const stream = await getClient(requestConfig.provider).chat.completions.create({
+        model: requestConfig.model,
         messages: [
           { role: "system", content: sys_prompt },
           { role: "user", content: user_content },
@@ -123,8 +130,11 @@ export default function ResultView({
   async function retry() {
     const gen = ++generation.current;
     try {
-      setModel(resolveModel(model_override, openrouter_model_override));
+      const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+      setProvider(requestConfig.provider);
+      setModel(requestConfig.model);
     } catch {
+      setProvider("openai");
       setModel("");
     }
     setLoading(true);

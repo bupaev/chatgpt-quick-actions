@@ -3,6 +3,11 @@ import OpenAI from "openai";
 
 export type ApiProvider = "openai" | "openrouter";
 
+interface ResolvedRequestConfig {
+  model: string;
+  provider: ApiProvider;
+}
+
 type Preferences = {
   apikey?: string;
   apiProvider?: ApiProvider;
@@ -64,17 +69,29 @@ export function getGlobalModel(provider = getProvider()) {
   return requirePreference(prefs.model, "OpenAI Model");
 }
 
-export function resolveModel(openaiOverride: string, openrouterOverride?: string) {
-  const provider = getProvider();
-
-  if (provider === "openrouter") {
-    const override = openrouterOverride?.trim();
-    if (override) {
-      return override;
-    }
-  } else if (openaiOverride !== "global") {
-    return openaiOverride;
+export function resolveRequestConfig(openaiOverride: string, openrouterOverride?: string): ResolvedRequestConfig {
+  const openrouterModel = openrouterOverride?.trim();
+  if (openrouterModel) {
+    return {
+      model: openrouterModel,
+      provider: "openrouter",
+    };
   }
 
-  return getGlobalModel(provider);
+  if (openaiOverride !== "global") {
+    return {
+      model: openaiOverride,
+      provider: "openai",
+    };
+  }
+
+  const provider = getProvider();
+  return {
+    model: getGlobalModel(provider),
+    provider,
+  };
+}
+
+export function resolveModel(openaiOverride: string, openrouterOverride?: string) {
+  return resolveRequestConfig(openaiOverride, openrouterOverride).model;
 }
