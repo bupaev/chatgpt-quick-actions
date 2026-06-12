@@ -3,7 +3,25 @@ import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
 
 export default async function Command(props: { arguments: { prompt: string } }) {
   const { prompt } = props.arguments;
-  const selectedText = await getSelectedText();
+
+  let selectedText = "";
+  try {
+    selectedText = await getSelectedText();
+  } catch {
+    // getSelectedText failed — fall back to clipboard
+  }
+  if (!selectedText) {
+    try {
+      selectedText = (await Clipboard.readText()) ?? "";
+    } catch {
+      // clipboard also failed
+    }
+  }
+  if (!selectedText) {
+    await showHUD("No text selected and clipboard is empty.");
+    return;
+  }
+
   const prefs = getPreferenceValues();
   const model_override = prefs.model_transform;
   const openrouter_model_override = prefs.openrouter_model_transform;

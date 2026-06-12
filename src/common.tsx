@@ -1,5 +1,6 @@
 import {
   getSelectedText,
+  Clipboard,
   Detail,
   getPreferenceValues,
   ActionPanel,
@@ -68,12 +69,25 @@ export default function ResultView({
       try {
         selectedText = await getSelectedText();
       } catch (error) {
+        // getSelectedText failed — fall back to clipboard
+      }
+
+      // If getSelectedText returned empty or threw, try clipboard
+      if (!selectedText) {
+        try {
+          selectedText = (await Clipboard.readText()) ?? "";
+        } catch {
+          // clipboard also failed
+        }
+      }
+
+      if (!selectedText) {
         if (gen !== generation.current) return;
         toast.title = "Error";
         toast.style = Toast.Style.Failure;
         setLoading(false);
         setResponse(
-          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
+          "⚠️ Raycast was unable to get the selected text or clipboard content. Please select some text or copy it to the clipboard and try again."
         );
         return;
       }

@@ -21,7 +21,20 @@ export async function runNoUICommand({
   try {
     selectedText = await getSelectedText();
   } catch (error) {
-    await showHUD(`No text selected (${error})`);
+    // getSelectedText failed — fall back to clipboard
+  }
+
+  // If getSelectedText returned empty or threw, try clipboard
+  if (!selectedText) {
+    try {
+      selectedText = (await Clipboard.readText()) ?? "";
+    } catch {
+      // clipboard also failed
+    }
+  }
+
+  if (!selectedText) {
+    await showHUD("No text selected and clipboard is empty.");
     return;
   }
 
