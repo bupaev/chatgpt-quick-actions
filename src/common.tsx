@@ -192,11 +192,8 @@ export default function ResultView({
         !loading && (
           <ActionPanel title="Actions">
             <Action.Paste title="Replace Selected" content={response} icon={Icon.Pencil} />
-            <Action.CopyToClipboard
-              title="Copy Results"
-              content={response}
-              shortcut={{ modifiers: ["cmd"], key: "enter" }}
-            />
+            {/* Second action: Raycast binds it to ⌘↵ automatically */}
+            <Action.CopyToClipboard title="Copy Results" content={response} />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
             {smartModel && model !== smartModel && (
               <Action
