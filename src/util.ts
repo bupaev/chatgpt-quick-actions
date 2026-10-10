@@ -40,7 +40,7 @@ export function estimatePrice(
   input_token: number,
   output_token: number,
   model: string,
-  options?: EstimatePriceOptions
+  options?: EstimatePriceOptions,
 ) {
   let price = 0;
   const provider = options?.provider ?? "openai";

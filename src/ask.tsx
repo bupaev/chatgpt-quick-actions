@@ -40,7 +40,7 @@ export default function AskView() {
         setSelectedText(selectedText);
         setCanUseContext(true);
         setUsingContext(true);
-      } catch (error) {
+      } catch {
         // No selected text. Pass an empty string so ResultView won't try getting selected text
         setCanUseContext(false);
       }

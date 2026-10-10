@@ -67,13 +67,13 @@ export default function ResultView({
     } else {
       try {
         selectedText = await getSelectedText();
-      } catch (error) {
+      } catch {
         if (gen !== generation.current) return;
         toast.title = "Error";
         toast.style = Toast.Style.Failure;
         setLoading(false);
         setResponse(
-          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again."
+          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again.",
         );
         return;
       }
@@ -125,7 +125,7 @@ export default function ResultView({
       setResponse(
         `⚠️ Failed to get response from ${providerLabel}. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
           (error as Error).message
-        }\`\`\``
+        }\`\`\``,
       );
       return;
     }
