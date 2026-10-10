@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import ResultView from "./common";
 
 const prefs = getPreferenceValues();
-const model_override = prefs.model_ask;
 const sys_prompt = prefs.ask_sys_prompt;
 const default_question = prefs.ask_default_question;
 const toast_title = "Thinking...";
@@ -62,7 +61,6 @@ export default function AskView() {
                 sys_prompt={sys_prompt}
                 selected_text={usingContext ? selectedText : ""}
                 user_extra_msg={question ? question : default_question}
-                model_override={model_override}
                 toast_title={toast_title}
               />
             }

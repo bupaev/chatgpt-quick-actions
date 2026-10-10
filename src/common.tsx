@@ -9,13 +9,12 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getProviderLabel, getSmartModel, ResolvedRequestConfig, resolveRequestConfig } from "./api";
+import { getClient, getSmartModel, resolveModel } from "./api";
 import { countToken, estimatePrice, formatPriceUSD, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
-  model_override: string;
-  openrouter_model_override?: string;
+  model_override?: string;
   toast_title: string;
   user_extra_msg?: string;
   selected_text?: string;
@@ -24,7 +23,6 @@ interface ResultViewProps {
 export default function ResultView({
   sys_prompt,
   model_override,
-  openrouter_model_override,
   toast_title,
   user_extra_msg,
   selected_text,
@@ -41,22 +39,14 @@ export default function ResultView({
   const [loading, setLoading] = useState(true);
   const [cumulative_tokens, setCumulativeTokens] = useState(0);
   const [cumulative_cost, setCumulativeCost] = useState(0);
-  const [provider, setProvider] = useState(() => {
-    try {
-      return resolveRequestConfig(model_override, openrouter_model_override).provider;
-    } catch {
-      return "openai" as const;
-    }
-  });
   const [model, setModel] = useState(() => {
     try {
-      return resolveRequestConfig(model_override, openrouter_model_override).model;
+      return resolveModel(model_override);
     } catch {
       return "";
     }
   });
-  const providerLabel = getProviderLabel(provider);
-  const smartModel = getSmartModel(provider);
+  const smartModel = getSmartModel();
   const generation = useRef(0);
   const abortController = useRef<AbortController | null>(null);
 
@@ -67,7 +57,7 @@ export default function ResultView({
     return ++generation.current;
   }
 
-  async function getResult(gen: number, forcedConfig?: ResolvedRequestConfig) {
+  async function getResult(gen: number, forcedModel?: string) {
     const now = new Date();
     const toast = await showToast(Toast.Style.Animated, toast_title);
     let selectedText = "";
@@ -90,16 +80,13 @@ export default function ResultView({
 
     if (gen !== generation.current) return;
 
-    let requestProvider = provider;
     try {
-      const requestConfig = forcedConfig ?? resolveRequestConfig(model_override, openrouter_model_override);
-      requestProvider = requestConfig.provider;
-      setProvider(requestConfig.provider);
-      setModel(requestConfig.model);
+      const requestModel = forcedModel ?? resolveModel(model_override);
+      setModel(requestModel);
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
-      const stream = await getClient(requestConfig.provider).chat.completions.create(
+      const stream = await getClient().chat.completions.create(
         {
-          model: requestConfig.model,
+          model: requestModel,
           messages: [
             { role: "system", content: sys_prompt },
             { role: "user", content: user_content },
@@ -146,7 +133,7 @@ export default function ResultView({
       toast.style = Toast.Style.Failure;
       setLoading(false);
       setResponse(
-        `⚠️ Failed to get response from ${getProviderLabel(requestProvider)}. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
+        `⚠️ Failed to get response from OpenRouter. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
           (error as Error).message
         }\`\`\``,
       );
@@ -157,11 +144,8 @@ export default function ResultView({
   async function retry() {
     const gen = nextGeneration();
     try {
-      const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
-      setProvider(requestConfig.provider);
-      setModel(requestConfig.model);
+      setModel(resolveModel(model_override));
     } catch {
-      setProvider("openai");
       setModel("");
     }
     setLoading(true);
@@ -172,11 +156,10 @@ export default function ResultView({
   async function retryWithSmartestModel() {
     if (!smartModel) return;
     const gen = nextGeneration();
-    const requestConfig: ResolvedRequestConfig = { provider, model: smartModel };
-    setModel(requestConfig.model);
+    setModel(smartModel);
     setLoading(true);
     setResponse("");
-    getResult(gen, requestConfig);
+    getResult(gen, smartModel);
   }
 
   useEffect(() => {
@@ -192,7 +175,6 @@ export default function ResultView({
     if (loading == false) {
       setCumulativeTokens((tokens) => tokens + prompt_token_count + response_token_count);
       const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
-        provider,
         openrouterInputPrice: pref.openrouterInputPrice,
         openrouterOutputPrice: pref.openrouterOutputPrice,
         openrouterModel: pref.openrouterModel,
@@ -208,7 +190,6 @@ export default function ResultView({
     pref.openrouterOutputPrice,
     pref.openrouterModel,
     prompt_token_count,
-    provider,
     response_token_count,
   ]);
 
@@ -227,7 +208,6 @@ export default function ResultView({
   }
 
   const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
-    provider,
     openrouterInputPrice: pref.openrouterInputPrice,
     openrouterOutputPrice: pref.openrouterOutputPrice,
     openrouterModel: pref.openrouterModel,
@@ -261,7 +241,6 @@ export default function ResultView({
       }
       metadata={
         <Detail.Metadata>
-          <Detail.Metadata.Label title="Provider" text={providerLabel} />
           <Detail.Metadata.Label title="Current Model" text={model} />
           <Detail.Metadata.Label title="Prompt Tokens" text={prompt_token_count.toString()} />
           <Detail.Metadata.Label title="Response Tokens" text={response_token_count.toString()} />

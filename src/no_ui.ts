@@ -1,21 +1,14 @@
 import { Clipboard, getSelectedText, showHUD } from "@raycast/api";
-import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
+import { getClient, resolveModel } from "./api";
 
 interface RunNoUICommandProps {
   action: string;
   prompt?: string;
-  model_override: string;
-  openrouter_model_override?: string;
+  model_override?: string;
   successMessage: string;
 }
 
-export async function runNoUICommand({
-  action,
-  prompt,
-  model_override,
-  openrouter_model_override,
-  successMessage,
-}: RunNoUICommandProps) {
+export async function runNoUICommand({ action, prompt, model_override, successMessage }: RunNoUICommandProps) {
   let selectedText = "";
 
   try {
@@ -25,14 +18,11 @@ export async function runNoUICommand({
     return;
   }
 
-  let providerLabel = getProviderLabel();
-
   try {
     // Inside try: a missing API key or model should end in a HUD, not an unhandled error
-    const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
-    providerLabel = getProviderLabel(requestConfig.provider);
+    const model = resolveModel(model_override);
 
-    await showHUD(`${action} with ${providerLabel} model ${requestConfig.model}...`);
+    await showHUD(`${action} with ${model}...`);
 
     const messages = prompt
       ? [
@@ -41,21 +31,21 @@ export async function runNoUICommand({
         ]
       : [{ role: "user" as const, content: selectedText }];
 
-    const response = await getClient(requestConfig.provider).chat.completions.create({
-      model: requestConfig.model,
+    const response = await getClient().chat.completions.create({
+      model,
       messages,
     });
 
     const text = response.choices[0]?.message?.content?.trim();
 
     if (!text) {
-      await showHUD(`No response from ${providerLabel}.`);
+      await showHUD(`No response from ${model}.`);
       return;
     }
 
     await Clipboard.paste(text);
     await showHUD(successMessage);
   } catch (error) {
-    await showHUD(`Error from ${providerLabel}: ${(error as Error).message}`);
+    await showHUD(`Error from OpenRouter: ${(error as Error).message}`);
   }
 }

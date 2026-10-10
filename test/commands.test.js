@@ -17,18 +17,21 @@ const {
   waitFor,
 } = require("./helpers");
 
+const OPENROUTER_URL = /^https:\/\/openrouter\.ai\/api\/v1\/chat\/completions/;
+
 describe("no-UI commands", () => {
-  test("proofread sends system prompt and selected text to OpenAI, pastes the trimmed result", async () => {
+  test("proofread sends system prompt and selected text to OpenRouter, pastes the trimmed result", async () => {
     const rc = setup({
-      prefs: { prompt_proofread_no_ui: "PROOF", model_proofread_no_ui: "global" },
+      prefs: { prompt_proofread_no_ui: "PROOF" },
       respond: () => completion("  This is a small test.  "),
     });
     await loadCommand("src/proofread-no-ui.ts")();
 
     const [req] = rc.requests;
-    assert.match(req.url, /^https:\/\/api\.openai\.com\/v1\/chat\/completions/);
-    assert.equal(req.headers.authorization, "Bearer sk-test");
-    assert.equal(req.body.model, "gpt-5-mini");
+    assert.match(req.url, OPENROUTER_URL);
+    assert.equal(req.headers.authorization, "Bearer or-test");
+    assert.equal(req.headers["x-title"], "ChatGPT Quick Actions");
+    assert.equal(req.body.model, "google/gemini-2.5-flash");
     assert.deepEqual(req.body.messages, [
       { role: "system", content: "PROOF" },
       { role: "user", content: "Ths is a smal test." },
@@ -37,38 +40,29 @@ describe("no-UI commands", () => {
     assert.equal(rc.huds.at(-1), "Proofread text pasted.");
   });
 
-  test("execute uses the OpenRouter override with OpenRouter headers and no system prompt", async () => {
-    const rc = setup({
-      prefs: { model_execute: "global", openrouter_model_execute: "anthropic/claude-x" },
-      respond: () => completion("ok"),
-    });
+  test("execute uses the command override and no system prompt", async () => {
+    const rc = setup({ prefs: { openrouter_model_execute: " anthropic/claude-x " }, respond: () => completion("ok") });
     await loadCommand("src/execute.ts")();
 
     const [req] = rc.requests;
-    assert.match(req.url, /^https:\/\/openrouter\.ai\/api\/v1\/chat\/completions/);
-    assert.equal(req.headers.authorization, "Bearer or-test");
-    assert.equal(req.headers["x-title"], "ChatGPT Quick Actions");
     assert.equal(req.body.model, "anthropic/claude-x");
     assert.equal(req.body.messages.length, 1);
     assert.deepEqual(rc.pasted, ["ok"]);
   });
 
   test("API error ends in a HUD and pastes nothing", async () => {
-    const rc = setup({
-      prefs: { prompt_refine_no_ui: "R", model_refine_no_ui: "global" },
-      respond: () => apiError(401, "Incorrect API key"),
-    });
+    const rc = setup({ prefs: { prompt_refine_no_ui: "R" }, respond: () => apiError(401, "Invalid API key") });
     await loadCommand("src/refine-no-ui.ts")();
 
     assert.deepEqual(rc.pasted, []);
     assert.ok(
-      rc.huds.some((h) => h.includes("Error from OpenAI") && h.includes("Incorrect API key")),
+      rc.huds.some((h) => h.includes("Error from OpenRouter") && h.includes("Invalid API key")),
       rc.huds,
     );
   });
 
   test("no selected text ends in a HUD without a request", async () => {
-    const rc = setup({ prefs: { model_rewrite_no_ui: "global" }, selectedText: null, respond: () => completion("x") });
+    const rc = setup({ selectedText: null, respond: () => completion("x") });
     await loadCommand("src/rewrite-no-ui.ts")();
 
     assert.equal(rc.requests.length, 0);
@@ -76,41 +70,42 @@ describe("no-UI commands", () => {
   });
 
   test("missing API key ends in a HUD", async () => {
-    const rc = setup({ prefs: { apikey: "", model_proofread_no_ui: "global" }, respond: () => completion("x") });
-    await loadCommand("src/proofread-no-ui.ts")();
-
-    assert.ok(
-      rc.huds.some((h) => h.includes("OpenAI API Key")),
-      rc.huds,
-    );
-  });
-
-  test("missing OpenRouter model ends in a HUD", async () => {
-    const rc = setup({
-      prefs: { apiProvider: "openrouter", openrouterModel: " ", model_proofread_no_ui: "global" },
-      respond: () => completion("x"),
-    });
+    const rc = setup({ prefs: { openrouterApiKey: "" }, respond: () => completion("x") });
     await loadCommand("src/proofread-no-ui.ts")();
 
     assert.equal(rc.requests.length, 0);
     assert.ok(
-      rc.huds.some((h) => h.includes("OpenRouter Model ID")),
+      rc.huds.some((h) => h.includes("OpenRouter API Key")),
+      rc.huds,
+    );
+  });
+
+  test("missing model ends in a HUD", async () => {
+    const rc = setup({ prefs: { openrouterModel: " " }, respond: () => completion("x") });
+    await loadCommand("src/proofread-no-ui.ts")();
+
+    assert.equal(rc.requests.length, 0);
+    assert.ok(
+      rc.huds.some((h) => h.includes("Model ID")),
       rc.huds,
     );
   });
 
   test("transform uses the runtime prompt and the command model", async () => {
-    const rc = setup({ prefs: { model_transform: "gpt-5-nano" }, respond: () => completion("UPPER") });
+    const rc = setup({
+      prefs: { openrouter_model_transform: "openai/gpt-6-luna" },
+      respond: () => completion("UPPER"),
+    });
     await loadCommand("src/transform.ts")({ arguments: { prompt: "Uppercase it" } });
 
-    assert.equal(rc.requests[0].body.model, "gpt-5-nano");
+    assert.equal(rc.requests[0].body.model, "openai/gpt-6-luna");
     assert.equal(rc.requests[0].body.messages[0].content, "Uppercase it");
     assert.deepEqual(rc.pasted, ["UPPER"]);
     assert.equal(rc.huds.at(-1), "Transformed text pasted.");
   });
 
   test("transform without selected text ends in a HUD", async () => {
-    const rc = setup({ prefs: { model_transform: "global" }, selectedText: null, respond: () => completion("x") });
+    const rc = setup({ selectedText: null, respond: () => completion("x") });
     await loadCommand("src/transform.ts")({ arguments: { prompt: "p" } });
 
     assert.equal(rc.requests.length, 0);
@@ -119,20 +114,21 @@ describe("no-UI commands", () => {
 });
 
 describe("result view", () => {
-  test("streams the answer and shows metadata and actions", async () => {
+  test("streams the answer and shows metadata, manual-price cost and actions", async () => {
     const rc = setup({
-      prefs: { prompt_summarize: "SUM", model_summarize: "global" },
+      prefs: { prompt_summarize: "SUM" },
       respond: () => sse([chunk("Hello"), chunk(", world"), chunk(null, "stop")]),
     });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
 
+    assert.match(rc.requests[0].url, OPENROUTER_URL);
     assert.equal(rc.requests[0].body.stream, true);
+    assert.equal(rc.requests[0].body.model, "google/gemini-2.5-flash");
     assert.equal(rc.requests[0].body.messages[0].content, "SUM");
     assert.equal(detail().markdown, "Hello, world");
     assert.equal(detail().isLoading, false);
     const m = metadata(detail());
-    assert.equal(m["Provider"], "OpenAI");
-    assert.equal(m["Current Model"], "gpt-5-mini");
+    assert.equal(m["Current Model"], "google/gemini-2.5-flash");
     assert.ok(Number(m["Response Tokens"]) > 0);
     assert.match(m["Total Cost"], /^\$/);
     const actions = actionTitles(detail());
@@ -142,34 +138,30 @@ describe("result view", () => {
     assert.equal(rc.toasts[0].style, "success");
   });
 
-  test("OpenRouter provider uses the global model and manual prices", async () => {
-    setup({
-      prefs: { apiProvider: "openrouter", prompt_proofread: "P", model_proofread: "global" },
-      respond: (req) =>
-        req.url.includes("openrouter.ai") ? sse([chunk("Fixed."), chunk(null, "stop")]) : apiError(500, "wrong host"),
+  test("command override is used; manual prices do not apply to it", async () => {
+    const rc = setup({
+      prefs: { openrouter_model_proofread: "mistralai/mistral-x" },
+      respond: () => sse([chunk("Fixed."), chunk(null, "stop")]),
     });
     const { detail } = await renderView(loadCommand("src/proofread.tsx"));
 
+    assert.equal(rc.requests[0].body.model, "mistralai/mistral-x");
     const m = metadata(detail());
-    assert.equal(detail().markdown, "Fixed.");
-    assert.equal(m["Provider"], "OpenRouter");
-    assert.equal(m["Current Model"], "google/gemini-2.5-flash");
-    assert.match(m["Total Cost"], /^\$/);
+    assert.equal(m["Current Model"], "mistralai/mistral-x");
+    assert.equal(m["Total Cost"], "Unavailable");
   });
 
   test("API error is shown in the view", async () => {
-    setup({ prefs: { prompt_rewrite: "W", model_rewrite: "global" }, respond: () => apiError(400, "Rate limit") });
+    setup({ prefs: { prompt_rewrite: "W" }, respond: () => apiError(400, "Rate limit") });
     const { detail } = await renderView(loadCommand("src/rewrite.tsx"));
 
     assert.equal(detail().isLoading, false);
+    assert.match(detail().markdown, /Failed to get response from OpenRouter/);
     assert.match(detail().markdown, /Rate limit/);
   });
 
   test("finish_reason=length finishes and flags the early stop", async () => {
-    const rc = setup({
-      prefs: { prompt_custom: "C", model_custom: "global" },
-      respond: () => sse([chunk("Partial"), chunk(null, "length")]),
-    });
+    const rc = setup({ prefs: { prompt_custom: "C" }, respond: () => sse([chunk("Partial"), chunk(null, "length")]) });
     const { detail } = await renderView(loadCommand("src/custom.tsx"));
 
     assert.equal(detail().isLoading, false);
@@ -179,7 +171,7 @@ describe("result view", () => {
   });
 
   test("stream without finish_reason still finishes", async () => {
-    setup({ prefs: { model_preview: "global" }, respond: () => sse([chunk("A"), chunk("B")]) });
+    setup({ respond: () => sse([chunk("A"), chunk("B")]) });
     const { detail } = await renderView(loadCommand("src/preview.tsx"));
 
     assert.equal(detail().isLoading, false);
@@ -188,7 +180,7 @@ describe("result view", () => {
 
   test("chunks without choices are ignored", async () => {
     const rc = setup({
-      prefs: { prompt_refine: "R", model_refine: "global" },
+      prefs: { prompt_refine: "R" },
       respond: () => sse([chunk("Ok"), emptyChunk(), chunk(null, "stop")]),
     });
     const { detail } = await renderView(loadCommand("src/refine.tsx"));
@@ -199,19 +191,18 @@ describe("result view", () => {
 
   test("Retry keeps the command model", async () => {
     const rc = setup({
-      prefs: { prompt_summarize: "S", model_summarize: "gpt-5-nano" },
+      prefs: { openrouter_model_summarize: "openai/gpt-6-luna" },
       respond: () => sse([chunk("x"), chunk(null, "stop")]),
     });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
 
-    assert.equal(rc.requests[1].body.model, "gpt-5-nano");
+    assert.equal(rc.requests[1].body.model, "openai/gpt-6-luna");
   });
 
   test("unmount aborts the in-flight request", async () => {
     const rc = setup({
-      prefs: { prompt_summarize: "S", model_summarize: "global" },
       respond: (req) =>
         new Promise((_, reject) =>
           req.signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))),
@@ -230,47 +221,27 @@ describe("result view", () => {
 });
 
 describe("Retry with Smartest Model", () => {
-  test("OpenAI: re-runs with the configured smartest model", async () => {
-    const rc = setup({
-      prefs: { prompt_summarize: "S", model_summarize: "global" },
-      respond: () => sse([chunk("x"), chunk(null, "stop")]),
-    });
+  test("re-runs with the configured smartest model; plain Retry goes back to the command model", async () => {
+    const rc = setup({ respond: () => sse([chunk("x"), chunk(null, "stop")]) });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
     runAction(detail(), "Retry with Smartest Model");
     await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
 
-    assert.match(rc.requests[1].url, /api\.openai\.com/);
-    assert.equal(rc.requests[1].body.model, "gpt-6-astra");
+    assert.match(rc.requests[1].url, OPENROUTER_URL);
+    assert.equal(rc.requests[1].body.model, "anthropic/claude-opus-5.5");
     const m = metadata(detail());
-    assert.equal(m["Current Model"], "gpt-6-astra");
-    // Already on the smartest model: the action disappears, plain Retry goes back to the command model
+    assert.equal(m["Current Model"], "anthropic/claude-opus-5.5");
+    // Manual prices belong to the global model only
+    assert.equal(m["Total Cost"], "Unavailable");
+    // Already on the smartest model: the action disappears
     assert.ok(!actionTitles(detail()).includes("Retry with Smartest Model"));
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 3 && !detail().isLoading);
-    assert.equal(rc.requests[2].body.model, "gpt-5-mini");
-  });
-
-  test("OpenRouter: uses the OpenRouter smartest model; manual prices do not apply to it", async () => {
-    const rc = setup({
-      prefs: { apiProvider: "openrouter", prompt_summarize: "S", model_summarize: "global" },
-      respond: () => sse([chunk("x"), chunk(null, "stop")]),
-    });
-    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
-    runAction(detail(), "Retry with Smartest Model");
-    await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
-
-    assert.match(rc.requests[1].url, /openrouter\.ai/);
-    assert.equal(rc.requests[1].body.model, "anthropic/claude-opus-5.5");
-    const m = metadata(detail());
-    assert.equal(m["Provider"], "OpenRouter");
-    assert.equal(m["Total Cost"], "Unavailable");
+    assert.equal(rc.requests[2].body.model, "google/gemini-2.5-flash");
   });
 
   test("hidden when the smartest model is not configured", async () => {
-    setup({
-      prefs: { smartModel: "", prompt_summarize: "S", model_summarize: "global" },
-      respond: () => sse([chunk("x"), chunk(null, "stop")]),
-    });
+    setup({ prefs: { openrouterSmartModel: "" }, respond: () => sse([chunk("x"), chunk(null, "stop")]) });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
 
     assert.ok(!actionTitles(detail()).includes("Retry with Smartest Model"));

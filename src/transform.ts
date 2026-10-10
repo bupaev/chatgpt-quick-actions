@@ -6,8 +6,7 @@ export default async function Command(props: { arguments: { prompt: string } }) 
   await runNoUICommand({
     action: "Transforming",
     prompt: props.arguments.prompt,
-    model_override: prefs.model_transform,
-    openrouter_model_override: prefs.openrouter_model_transform,
+    model_override: prefs.openrouter_model_transform,
     successMessage: "Transformed text pasted.",
   });
 }

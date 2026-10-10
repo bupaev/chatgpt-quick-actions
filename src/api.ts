@@ -1,21 +1,10 @@
 import { getPreferenceValues } from "@raycast/api";
 import OpenAI from "openai";
 
-export type ApiProvider = "openai" | "openrouter";
-
-export interface ResolvedRequestConfig {
-  model: string;
-  provider: ApiProvider;
-}
-
 type Preferences = {
-  apikey?: string;
-  apiProvider?: ApiProvider;
-  model?: string;
   openrouterApiKey?: string;
   openrouterModel?: string;
   openrouterSmartModel?: string;
-  smartModel?: string;
 };
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
@@ -34,73 +23,28 @@ function requirePreference(value: string | undefined, title: string) {
   return trimmedValue;
 }
 
-export function getProvider(): ApiProvider {
-  return getPreferences().apiProvider ?? "openai";
-}
-
-export function getProviderLabel(provider = getProvider()) {
-  return provider === "openrouter" ? "OpenRouter" : "OpenAI";
-}
-
-export function getClient(provider = getProvider()) {
-  const prefs = getPreferences();
-
-  if (provider === "openrouter") {
-    return new OpenAI({
-      apiKey: requirePreference(prefs.openrouterApiKey, "OpenRouter API Key"),
-      baseURL: OPENROUTER_BASE_URL,
-      defaultHeaders: {
-        "HTTP-Referer": OPENROUTER_REFERER,
-        "X-Title": OPENROUTER_TITLE,
-      },
-    });
-  }
-
+// OpenRouter exposes an OpenAI-compatible API, so the openai SDK is used as the client
+export function getClient() {
   return new OpenAI({
-    apiKey: requirePreference(prefs.apikey, "OpenAI API Key"),
+    apiKey: requirePreference(getPreferences().openrouterApiKey, "OpenRouter API Key"),
+    baseURL: OPENROUTER_BASE_URL,
+    defaultHeaders: {
+      "HTTP-Referer": OPENROUTER_REFERER,
+      "X-Title": OPENROUTER_TITLE,
+    },
   });
 }
 
-export function getGlobalModel(provider = getProvider()) {
-  const prefs = getPreferences();
-
-  if (provider === "openrouter") {
-    return requirePreference(prefs.openrouterModel, "OpenRouter Model ID");
-  }
-
-  return requirePreference(prefs.model, "OpenAI Model");
+export function getGlobalModel() {
+  return requirePreference(getPreferences().openrouterModel, "Model ID");
 }
 
-// Model for "Retry with Smartest Model"; undefined when not configured for the provider
-export function getSmartModel(provider: ApiProvider) {
-  const prefs = getPreferences();
-  const model = provider === "openrouter" ? prefs.openrouterSmartModel : prefs.smartModel;
-  return model?.trim() || undefined;
+// Model for "Retry with Smartest Model"; undefined when not configured
+export function getSmartModel() {
+  return getPreferences().openrouterSmartModel?.trim() || undefined;
 }
 
-export function resolveRequestConfig(openaiOverride: string, openrouterOverride?: string): ResolvedRequestConfig {
-  const openrouterModel = openrouterOverride?.trim();
-  if (openrouterModel) {
-    return {
-      model: openrouterModel,
-      provider: "openrouter",
-    };
-  }
-
-  if (openaiOverride !== "global") {
-    return {
-      model: openaiOverride,
-      provider: "openai",
-    };
-  }
-
-  const provider = getProvider();
-  return {
-    model: getGlobalModel(provider),
-    provider,
-  };
-}
-
-export function resolveModel(openaiOverride: string, openrouterOverride?: string) {
-  return resolveRequestConfig(openaiOverride, openrouterOverride).model;
+// Command-level override wins over the global model
+export function resolveModel(modelOverride?: string) {
+  return modelOverride?.trim() || getGlobalModel();
 }

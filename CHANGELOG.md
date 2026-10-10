@@ -1,5 +1,13 @@
 # ChatGPT Quick Actions Changelog
 
+## [OpenRouter Only] - 2026-10-11
+
+- Removed OpenAI as a provider: OpenRouter is now the only backend, so any OpenRouter model works, including OpenAI ones (e.g. `openai/...`)
+- Removed the OpenAI API key, provider switch, OpenAI model and per-command OpenAI model preferences; OpenRouter settings are kept as they were
+- Replaced "Retry with GPT-5.4" with "Retry with Smartest Model" (⇧⌘R), configured by the `Smartest Model` preference
+- Fixed streaming that could hang on non-"stop" finish reasons, chunks without choices, and unhandled errors in no-UI commands
+- Updated dependencies (Raycast API 1.104, openai SDK 7)
+
 ## [Models Update] - 2026-03-16
 
 - Added latest OpenAI models: GPT-5.4 series (Pro, Thinking, Standard), GPT-5.3 series (Garlic, Instant, Standard), and GPT-4.1 series (Standard, Mini, Nano)

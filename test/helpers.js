@@ -1,5 +1,5 @@
 // Test harness: bundles real command entry points with esbuild, swaps @raycast/api for
-// ./raycast-mock.js and replaces global fetch, so the real openai SDK talks to scripted responses.
+// ./raycast-mock.js and replaces global fetch, so the real openai SDK talks to scripted OpenRouter responses.
 const path = require("path");
 const Module = require("module");
 const esbuild = require("esbuild");
@@ -76,15 +76,11 @@ const apiError = (status, message) =>
   });
 
 const basePrefs = {
-  apiProvider: "openai",
-  apikey: "sk-test",
   openrouterApiKey: "or-test",
-  model: "gpt-5-mini",
   openrouterModel: "google/gemini-2.5-flash",
   openrouterInputPrice: "0.3",
   openrouterOutputPrice: "2.5",
-  // Smartest-model IDs are user settings without defaults; any IDs work here
-  smartModel: "gpt-6-astra",
+  // The smartest-model ID is a user setting without a default; any ID works here
   openrouterSmartModel: "anthropic/claude-opus-5.5",
   sidenote: false,
 };
