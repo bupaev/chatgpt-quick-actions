@@ -1102,6 +1102,22 @@
       "placeholder": "e.g. 0.60"
     },
     {
+      "name": "smartModel",
+      "description": "OpenAI model ID for \"Retry with Smartest Model\" (⇧⌘R). Leave empty to hide the action.",
+      "type": "textfield",
+      "required": false,
+      "title": "Smartest Model (OpenAI)",
+      "placeholder": "e.g. gpt-6-astra"
+    },
+    {
+      "name": "openrouterSmartModel",
+      "description": "OpenRouter model ID for \"Retry with Smartest Model\" (⇧⌘R). Leave empty to hide the action.",
+      "type": "textfield",
+      "required": false,
+      "title": "Smartest Model (OpenRouter)",
+      "placeholder": "e.g. anthropic/claude-opus-5.5"
+    },
+    {
       "name": "sidenote",
       "title": "SideNote Integration",
       "description": "Enable SideNote integration (requires SideNote). Allows you to send the results to SideNote as a new note.",
@@ -1115,8 +1131,11 @@
     "@raycast/eslint-config": "^2.2.0",
     "@types/node": "22.19.17",
     "@types/react": "19.0.10",
+    "esbuild": "^0.27.7",
     "eslint": "^9.39.4",
     "prettier": "^3.6.2",
+    "react": "19.0.0",
+    "react-test-renderer": "19.0.0",
     "typescript": "^5.9.3"
   },
   "scripts": {
@@ -1125,7 +1144,8 @@
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
-    "publish": "ray publish"
+    "publish": "ray publish",
+    "test": "node --test test/*.test.js"
   },
   "platforms": [
     "macOS"

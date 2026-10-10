@@ -9,7 +9,7 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getProviderLabel, ResolvedRequestConfig, resolveRequestConfig } from "./api";
+import { getClient, getProviderLabel, getSmartModel, ResolvedRequestConfig, resolveRequestConfig } from "./api";
 import { countToken, estimatePrice, formatPriceUSD, sentToSideNote } from "./util";
 
 interface ResultViewProps {
@@ -33,6 +33,7 @@ export default function ResultView({
     sidenote?: boolean;
     openrouterInputPrice?: string;
     openrouterOutputPrice?: string;
+    openrouterModel?: string;
   }>();
   const [response_token_count, setResponseTokenCount] = useState(0);
   const [prompt_token_count, setPromptTokenCount] = useState(0);
@@ -55,6 +56,7 @@ export default function ResultView({
     }
   });
   const providerLabel = getProviderLabel(provider);
+  const smartModel = getSmartModel(provider);
   const generation = useRef(0);
   const abortController = useRef<AbortController | null>(null);
 
@@ -167,10 +169,10 @@ export default function ResultView({
     getResult(gen);
   }
 
-  async function retryWithGPT5_4() {
+  async function retryWithSmartestModel() {
+    if (!smartModel) return;
     const gen = nextGeneration();
-    const requestConfig: ResolvedRequestConfig = { provider: "openai", model: "gpt-5.4" };
-    setProvider(requestConfig.provider);
+    const requestConfig: ResolvedRequestConfig = { provider, model: smartModel };
     setModel(requestConfig.model);
     setLoading(true);
     setResponse("");
@@ -193,6 +195,7 @@ export default function ResultView({
         provider,
         openrouterInputPrice: pref.openrouterInputPrice,
         openrouterOutputPrice: pref.openrouterOutputPrice,
+        openrouterModel: pref.openrouterModel,
       });
       if (estimatedCost >= 0) {
         setCumulativeCost((cost) => cost + estimatedCost);
@@ -203,6 +206,7 @@ export default function ResultView({
     model,
     pref.openrouterInputPrice,
     pref.openrouterOutputPrice,
+    pref.openrouterModel,
     prompt_token_count,
     provider,
     response_token_count,
@@ -226,6 +230,7 @@ export default function ResultView({
     provider,
     openrouterInputPrice: pref.openrouterInputPrice,
     openrouterOutputPrice: pref.openrouterOutputPrice,
+    openrouterModel: pref.openrouterModel,
   });
 
   return (
@@ -242,10 +247,10 @@ export default function ResultView({
               shortcut={{ modifiers: ["cmd"], key: "enter" }}
             />
             <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
-            {provider === "openai" && model != "gpt-5.4" && (
+            {smartModel && model !== smartModel && (
               <Action
-                title="Retry with GPT-5.4"
-                onAction={retryWithGPT5_4}
+                title="Retry with Smartest Model"
+                onAction={retryWithSmartestModel}
                 shortcut={{ modifiers: ["cmd", "shift"], key: "r" }}
                 icon={Icon.ArrowNe}
               />

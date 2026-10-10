@@ -34,7 +34,7 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 ## Tips
 
 - Regenerate the results with `cmd + R` if you are not satisfied.
-- Retry with `cmd + shift + R` to temporarily use `gpt-5.4-thinking` if you were using a different model for the command.
+- Retry with `cmd + shift + R` to temporarily use the smartest model set in the extension preferences (`Smartest Model`, separately for OpenAI and OpenRouter).
 
 ---
 

@@ -29,6 +29,8 @@ interface EstimatePriceOptions {
   provider?: "openai" | "openrouter";
   openrouterInputPrice?: string;
   openrouterOutputPrice?: string;
+  // Manual prices apply only to this model (the global OpenRouter model)
+  openrouterModel?: string;
 }
 
 export function formatPriceUSD(priceInCents: number) {
@@ -46,6 +48,9 @@ export function estimatePrice(
   const provider = options?.provider ?? "openai";
 
   if (provider === "openrouter") {
+    if (model !== options?.openrouterModel?.trim()) {
+      return -1;
+    }
     const inputPrice = Number(options?.openrouterInputPrice);
     const outputPrice = Number(options?.openrouterOutputPrice);
 

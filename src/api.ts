@@ -14,6 +14,8 @@ type Preferences = {
   model?: string;
   openrouterApiKey?: string;
   openrouterModel?: string;
+  openrouterSmartModel?: string;
+  smartModel?: string;
 };
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
@@ -67,6 +69,13 @@ export function getGlobalModel(provider = getProvider()) {
   }
 
   return requirePreference(prefs.model, "OpenAI Model");
+}
+
+// Model for "Retry with Smartest Model"; undefined when not configured for the provider
+export function getSmartModel(provider: ApiProvider) {
+  const prefs = getPreferences();
+  const model = provider === "openrouter" ? prefs.openrouterSmartModel : prefs.smartModel;
+  return model?.trim() || undefined;
 }
 
 export function resolveRequestConfig(openaiOverride: string, openrouterOverride?: string): ResolvedRequestConfig {
