@@ -30,6 +30,8 @@ export default function ResultView({
   const pref = getPreferenceValues<{ sidenote?: boolean }>();
   // Reported by OpenRouter at the end of the stream; undefined while loading or on error
   const [usage, setUsage] = useState<RequestUsage>();
+  // Seconds from the command start to the end of the answer; undefined while loading or on error
+  const [responseTime, setResponseTime] = useState<number>();
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState(() => {
@@ -114,6 +116,7 @@ export default function ResultView({
       setLoading(false);
       setUsage(usage_);
       const duration = (new Date().getTime() - now.getTime()) / 1000;
+      setResponseTime(duration);
       if (finishReason && finishReason !== "stop") {
         toast.style = Toast.Style.Failure;
         toast.title = `Stopped early (${finishReason}) after ${duration} seconds`;
@@ -145,6 +148,7 @@ export default function ResultView({
     setLoading(true);
     setResponse("");
     setUsage(undefined);
+    setResponseTime(undefined);
     getResult(gen);
   }
 
@@ -155,6 +159,7 @@ export default function ResultView({
     setLoading(true);
     setResponse("");
     setUsage(undefined);
+    setResponseTime(undefined);
     getResult(gen, smartModel);
   }
 
@@ -210,6 +215,10 @@ export default function ResultView({
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label title="Current Model" text={model} />
+          <Detail.Metadata.Label
+            title="Response Time"
+            text={responseTime !== undefined ? `${responseTime.toFixed(1)} s` : missing}
+          />
           <Detail.Metadata.Label title="Prompt Tokens" text={usage ? usage.promptTokens.toString() : missing} />
           <Detail.Metadata.Label title="Response Tokens" text={usage ? usage.completionTokens.toString() : missing} />
           {usage && usage.reasoningTokens > 0 && (

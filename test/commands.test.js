@@ -137,6 +137,7 @@ describe("result view", () => {
     assert.equal(m["Total Tokens"], "15");
     assert.equal(m["Cost"], "$0.000123");
     assert.equal(m["Reasoning Tokens"], undefined);
+    assert.match(m["Response Time"], /^\d+\.\d s$/);
     const actions = actionTitles(detail());
     for (const title of ["Replace Selected", "Copy Results", "Retry", "Retry with Smartest Model"]) {
       assert.ok(actions.includes(title), `missing ${title} in ${actions}`);
@@ -193,6 +194,7 @@ describe("result view", () => {
     assert.match(detail().markdown, /Upstream error/);
     assert.equal(metadata(detail())["Total Tokens"], "Unavailable");
     assert.equal(metadata(detail())["Cost"], "Unavailable");
+    assert.equal(metadata(detail())["Response Time"], "Unavailable");
 
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 3 && !detail().isLoading);
