@@ -1,32 +1,13 @@
-import { Clipboard, getPreferenceValues, getSelectedText, showHUD } from "@raycast/api";
-import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
+import { getPreferenceValues } from "@raycast/api";
+import { runNoUICommand } from "./no_ui";
 
 export default async function Command(props: { arguments: { prompt: string } }) {
-  const { prompt } = props.arguments;
-  const selectedText = await getSelectedText();
   const prefs = getPreferenceValues();
-  const model_override = prefs.model_transform;
-  const openrouter_model_override = prefs.openrouter_model_transform;
-  const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
-  const providerLabel = getProviderLabel(requestConfig.provider);
-
-  await showHUD(`Transforming with ${providerLabel} model ${requestConfig.model}...`);
-  try {
-    const res = await getClient(requestConfig.provider).chat.completions.create({
-      model: requestConfig.model,
-      messages: [
-        { role: "system", content: prompt },
-        { role: "user", content: selectedText },
-      ],
-    });
-    const text = res.choices[0]?.message?.content?.trim();
-    if (text) {
-      await Clipboard.paste(text);
-      await showHUD("Transformed text pasted.");
-    } else {
-      await showHUD(`No response from ${providerLabel}.`);
-    }
-  } catch (error) {
-    await showHUD(`Error: ${(error as Error).message}`);
-  }
+  await runNoUICommand({
+    action: "Transforming",
+    prompt: props.arguments.prompt,
+    model_override: prefs.model_transform,
+    openrouter_model_override: prefs.openrouter_model_transform,
+    successMessage: "Transformed text pasted.",
+  });
 }

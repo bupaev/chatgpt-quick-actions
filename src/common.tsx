@@ -9,7 +9,7 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getProviderLabel, resolveRequestConfig } from "./api";
+import { getClient, getProviderLabel, ResolvedRequestConfig, resolveRequestConfig } from "./api";
 import { countToken, estimatePrice, formatPriceUSD, sentToSideNote } from "./util";
 
 interface ResultViewProps {
@@ -56,10 +56,17 @@ export default function ResultView({
   });
   const providerLabel = getProviderLabel(provider);
   const generation = useRef(0);
+  const abortController = useRef<AbortController | null>(null);
 
-  async function getResult(gen: number) {
+  // Starts a new request generation and cancels the in-flight one, if any
+  function nextGeneration() {
+    abortController.current?.abort();
+    abortController.current = new AbortController();
+    return ++generation.current;
+  }
+
+  async function getResult(gen: number, forcedConfig?: ResolvedRequestConfig) {
     const now = new Date();
-    let duration = 0;
     const toast = await showToast(Toast.Style.Animated, toast_title);
     let selectedText = "";
     if (selected_text !== undefined) {
@@ -81,41 +88,55 @@ export default function ResultView({
 
     if (gen !== generation.current) return;
 
+    let requestProvider = provider;
     try {
-      const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+      const requestConfig = forcedConfig ?? resolveRequestConfig(model_override, openrouter_model_override);
+      requestProvider = requestConfig.provider;
       setProvider(requestConfig.provider);
       setModel(requestConfig.model);
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
-      const stream = await getClient(requestConfig.provider).chat.completions.create({
-        model: requestConfig.model,
-        messages: [
-          { role: "system", content: sys_prompt },
-          { role: "user", content: user_content },
-        ],
-        stream: true,
-      });
+      const stream = await getClient(requestConfig.provider).chat.completions.create(
+        {
+          model: requestConfig.model,
+          messages: [
+            { role: "system", content: sys_prompt },
+            { role: "user", content: user_content },
+          ],
+          stream: true,
+        },
+        { signal: abortController.current?.signal },
+      );
       if (gen !== generation.current) return;
       setPromptTokenCount(countToken(sys_prompt + user_content));
 
-      if (!stream) return;
-
       let response_ = "";
+      let finishReason: string | null = null;
       for await (const part of stream) {
         if (gen !== generation.current) return;
-        const message = part.choices[0].delta.content;
+        // Some providers send chunks without choices (e.g. usage or keep-alive chunks)
+        const choice = part.choices[0];
+        const message = choice?.delta?.content;
         if (message) {
           response_ += message;
           setResponse(response_);
           setResponseTokenCount(countToken(response_));
         }
-        if (part.choices[0].finish_reason === "stop") {
-          setLoading(false);
-          const done = new Date();
-          duration = (done.getTime() - now.getTime()) / 1000;
-          toast.style = Toast.Style.Success;
-          toast.title = `Finished in ${duration} seconds`;
+        if (choice?.finish_reason) {
+          finishReason = choice.finish_reason;
           break; // Stream finished
         }
+      }
+      if (gen !== generation.current) return;
+
+      // The stream may also end without a finish_reason, so finalize after the loop
+      setLoading(false);
+      const duration = (new Date().getTime() - now.getTime()) / 1000;
+      if (finishReason && finishReason !== "stop") {
+        toast.style = Toast.Style.Failure;
+        toast.title = `Stopped early (${finishReason}) after ${duration} seconds`;
+      } else {
+        toast.style = Toast.Style.Success;
+        toast.title = `Finished in ${duration} seconds`;
       }
     } catch (error) {
       if (gen !== generation.current) return;
@@ -123,7 +144,7 @@ export default function ResultView({
       toast.style = Toast.Style.Failure;
       setLoading(false);
       setResponse(
-        `⚠️ Failed to get response from ${providerLabel}. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
+        `⚠️ Failed to get response from ${getProviderLabel(requestProvider)}. Please check your network connection and API settings. \n\n Error Message: \`\`\`${
           (error as Error).message
         }\`\`\``,
       );
@@ -132,7 +153,7 @@ export default function ResultView({
   }
 
   async function retry() {
-    const gen = ++generation.current;
+    const gen = nextGeneration();
     try {
       const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
       setProvider(requestConfig.provider);
@@ -147,18 +168,21 @@ export default function ResultView({
   }
 
   async function retryWithGPT5_4() {
-    const gen = ++generation.current;
-    setModel("gpt-5.4");
+    const gen = nextGeneration();
+    const requestConfig: ResolvedRequestConfig = { provider: "openai", model: "gpt-5.4" };
+    setProvider(requestConfig.provider);
+    setModel(requestConfig.model);
     setLoading(true);
     setResponse("");
-    getResult(gen);
+    getResult(gen, requestConfig);
   }
 
   useEffect(() => {
-    const gen = ++generation.current;
+    const gen = nextGeneration();
     getResult(gen);
     return () => {
       generation.current++; // invalidate this generation on cleanup
+      abortController.current?.abort();
     };
   }, []);
 

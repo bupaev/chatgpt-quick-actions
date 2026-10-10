@@ -25,12 +25,15 @@ export async function runNoUICommand({
     return;
   }
 
-  const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
-  const providerLabel = getProviderLabel(requestConfig.provider);
-
-  await showHUD(`${action} with ${providerLabel} model ${requestConfig.model}...`);
+  let providerLabel = getProviderLabel();
 
   try {
+    // Inside try: a missing API key or model should end in a HUD, not an unhandled error
+    const requestConfig = resolveRequestConfig(model_override, openrouter_model_override);
+    providerLabel = getProviderLabel(requestConfig.provider);
+
+    await showHUD(`${action} with ${providerLabel} model ${requestConfig.model}...`);
+
     const messages = prompt
       ? [
           { role: "system" as const, content: prompt },

@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 export type ApiProvider = "openai" | "openrouter";
 
-interface ResolvedRequestConfig {
+export interface ResolvedRequestConfig {
   model: string;
   provider: ApiProvider;
 }
