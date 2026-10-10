@@ -365,3 +365,62 @@ describe("reasoning effort", () => {
     assert.deepEqual(rc.pasted, ["ok"]);
   });
 });
+
+describe("provider routing", () => {
+  const stream = () =>
+    sse([
+      { ...chunk("x"), provider: "Google" },
+      { ...chunk(null, "stop"), provider: "Google" },
+      { ...usageChunk(), provider: "Google" },
+    ]);
+
+  test("no provider order sends no provider object", async () => {
+    const rc = setup({ respond: stream });
+    await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal("provider" in rc.requests[0].body, false);
+  });
+
+  test("provider order is trimmed and sent with fallbacks left on", async () => {
+    const rc = setup({
+      prefs: {
+        providerOrder: " google-vertex/europe,, google-vertex/eu ,amazon-bedrock/eu-west-1 ",
+        providerFallbacks: true,
+      },
+      respond: stream,
+    });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.deepEqual(rc.requests[0].body.provider, {
+      order: ["google-vertex/europe", "google-vertex/eu", "amazon-bedrock/eu-west-1"],
+    });
+    assert.equal(metadata(detail())["Provider"], "Google");
+  });
+
+  test("turning fallbacks off restricts routing to the listed providers", async () => {
+    const rc = setup({ prefs: { providerOrder: "google-vertex/europe", providerFallbacks: false }, respond: stream });
+    await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.deepEqual(rc.requests[0].body.provider, { order: ["google-vertex/europe"], allow_fallbacks: false });
+  });
+
+  test("routing applies to Retry with Smartest Model, no-UI commands, and combines with effort", async () => {
+    let rc = setup({ prefs: { providerOrder: "google-vertex/europe", reasoningEffort: "low" }, respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+    runAction(detail(), "Retry with Smartest Model");
+    await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
+    assert.deepEqual(rc.requests[1].body.provider, { order: ["google-vertex/europe"] });
+    assert.deepEqual(rc.requests[1].body.reasoning, { effort: "low" });
+
+    rc = setup({ prefs: { providerOrder: "amazon-bedrock/eu-west-1" }, respond: () => completion("ok") });
+    await loadCommand("src/refine-no-ui.ts")();
+    assert.deepEqual(rc.requests[0].body.provider, { order: ["amazon-bedrock/eu-west-1"] });
+  });
+
+  test("Provider row is hidden when the response does not name one", async () => {
+    setup({ respond: () => sse([chunk("x"), chunk(null, "stop")]) });
+    const { detail } = await renderView(loadCommand("src/preview.tsx"));
+
+    assert.equal(metadata(detail())["Provider"], undefined);
+  });
+});

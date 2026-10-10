@@ -905,6 +905,23 @@
       ]
     },
     {
+      "name": "providerOrder",
+      "title": "Provider Order",
+      "description": "Comma-separated OpenRouter provider slugs to try first, in order (copy them from a model page). Region-specific endpoints like google-vertex/europe are used only when listed here. Slugs that do not serve the model are skipped.",
+      "type": "textfield",
+      "required": false,
+      "placeholder": "e.g. google-vertex/europe, google-vertex/eu, amazon-bedrock/eu-west-1"
+    },
+    {
+      "name": "providerFallbacks",
+      "title": "Provider Fallbacks",
+      "label": "Fall back to other providers",
+      "description": "When the listed providers are unavailable or do not serve the model, let OpenRouter use any other provider. Turn off to use only the listed providers (requests fail instead).",
+      "type": "checkbox",
+      "required": false,
+      "default": true
+    },
+    {
       "name": "openrouterSmartModel",
       "description": "OpenRouter model ID for \"Retry with Smartest Model\" (⇧⌘R). Leave empty to hide the action.",
       "type": "textfield",

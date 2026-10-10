@@ -13,8 +13,9 @@ import {
   ChatStreamRequest,
   getClient,
   getSmartModel,
+  parseProvider,
   parseUsage,
-  reasoningParams,
+  openRouterParams,
   RequestUsage,
   resolveModel,
   resolveReasoningEffort,
@@ -43,6 +44,8 @@ export default function ResultView({
   const [usage, setUsage] = useState<RequestUsage>();
   // Seconds from the command start to the end of the answer; undefined while loading or on error
   const [responseTime, setResponseTime] = useState<number>();
+  // Provider OpenRouter routed the request to, e.g. "Google"
+  const [servedBy, setServedBy] = useState<string>();
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState(() => {
@@ -99,7 +102,7 @@ export default function ResultView({
           { role: "user", content: user_content },
         ],
         stream: true,
-        ...reasoningParams(effort),
+        ...openRouterParams(effort),
       };
       const stream = await getClient().chat.completions.create(request, { signal: abortController.current?.signal });
       if (gen !== generation.current) return;
@@ -121,6 +124,10 @@ export default function ResultView({
           finishReason = choice.finish_reason;
         }
         usage_ = parseUsage(part.usage) ?? usage_;
+        const provider = parseProvider(part);
+        if (provider) {
+          setServedBy(provider);
+        }
       }
       if (gen !== generation.current) return;
 
@@ -161,6 +168,7 @@ export default function ResultView({
     setResponse("");
     setUsage(undefined);
     setResponseTime(undefined);
+    setServedBy(undefined);
     getResult(gen);
   }
 
@@ -172,6 +180,7 @@ export default function ResultView({
     setResponse("");
     setUsage(undefined);
     setResponseTime(undefined);
+    setServedBy(undefined);
     getResult(gen, smartModel);
   }
 
@@ -227,6 +236,7 @@ export default function ResultView({
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label title="Current Model" text={model} />
+          {servedBy && <Detail.Metadata.Label title="Provider" text={servedBy} />}
           {effort && <Detail.Metadata.Label title="Reasoning Effort" text={effort} />}
           <Detail.Metadata.Label
             title="Response Time"

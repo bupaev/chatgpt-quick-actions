@@ -1,5 +1,5 @@
 import { Clipboard, getSelectedText, showHUD } from "@raycast/api";
-import { ChatRequest, getClient, reasoningParams, resolveModel, resolveReasoningEffort } from "./api";
+import { ChatRequest, getClient, openRouterParams, resolveModel, resolveReasoningEffort } from "./api";
 
 interface RunNoUICommandProps {
   action: string;
@@ -38,7 +38,7 @@ export async function runNoUICommand({
         ]
       : [{ role: "user" as const, content: selectedText }];
 
-    const request: ChatRequest = { model, messages, ...reasoningParams(resolveReasoningEffort(reasoning_effort)) };
+    const request: ChatRequest = { model, messages, ...openRouterParams(resolveReasoningEffort(reasoning_effort)) };
     const response = await getClient().chat.completions.create(request);
 
     const text = response.choices[0]?.message?.content?.trim();

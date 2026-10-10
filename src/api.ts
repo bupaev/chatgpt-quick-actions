@@ -6,13 +6,18 @@ type Preferences = {
   openrouterModel?: string;
   openrouterSmartModel?: string;
   reasoningEffort?: string;
+  providerOrder?: string;
+  providerFallbacks?: boolean;
 };
 
 const REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 export type ReasoningEffort = (typeof REASONING_EFFORTS)[number];
 
-// OpenRouter's unified reasoning control; not part of the openai SDK types
-type OpenRouterParams = { reasoning?: { effort: ReasoningEffort } };
+// OpenRouter-only request fields, not part of the openai SDK types
+type OpenRouterParams = {
+  reasoning?: { effort: ReasoningEffort };
+  provider?: { order: string[]; allow_fallbacks?: boolean };
+};
 export type ChatRequest = OpenAI.ChatCompletionCreateParamsNonStreaming & OpenRouterParams;
 export type ChatStreamRequest = OpenAI.ChatCompletionCreateParamsStreaming & OpenRouterParams;
 
@@ -60,8 +65,32 @@ export function resolveReasoningEffort(effortOverride?: string): ReasoningEffort
   return REASONING_EFFORTS.find((effort) => effort === value);
 }
 
-export function reasoningParams(effort: ReasoningEffort | undefined): OpenRouterParams {
-  return effort ? { reasoning: { effort } } : {};
+// Provider slugs from the preferences, e.g. "google-vertex/europe, amazon-bedrock/eu-west-1"
+export function getProviderOrder() {
+  return (getPreferences().providerOrder ?? "")
+    .split(",")
+    .map((slug) => slug.trim())
+    .filter(Boolean);
+}
+
+// Extra body fields for every request: reasoning effort and provider routing
+export function openRouterParams(effort: ReasoningEffort | undefined): OpenRouterParams {
+  const params: OpenRouterParams = {};
+  if (effort) {
+    params.reasoning = { effort };
+  }
+  const order = getProviderOrder();
+  if (order.length > 0) {
+    // Fallbacks are OpenRouter's default; only send the flag to turn them off
+    params.provider = getPreferences().providerFallbacks === false ? { order, allow_fallbacks: false } : { order };
+  }
+  return params;
+}
+
+// Name of the provider that served the request; OpenRouter adds it to every response and chunk
+export function parseProvider(response: object): string | undefined {
+  const { provider } = response as { provider?: unknown };
+  return typeof provider === "string" && provider ? provider : undefined;
 }
 
 // Command-level override wins over the global model

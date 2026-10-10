@@ -15,6 +15,7 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 - Works with any OpenRouter model ID (OpenAI, Anthropic, Google, and others)
 - Specify a global model or override it for each command
 - Set the reasoning effort globally or per command (`none` … `max`); "Model Default" leaves each model's own default
+- Choose OpenRouter providers and regions (e.g. EU endpoints such as `google-vertex/europe`) via the Provider Order preference
 
 ## Available Commands
 
@@ -111,6 +112,12 @@ chatgpt-quick-actions/
 #### Adding or Changing Prompts
 
 Each command has a customizable prompt defined in `package.json` under the command's `preferences` section. Users can also override prompts via Raycast preferences at runtime.
+
+#### Provider Routing
+
+`Provider Order` takes comma-separated OpenRouter provider slugs (copy them from the model's page on openrouter.ai) and is sent as `provider.order`. Region-specific endpoints such as `google-vertex/europe` or `amazon-bedrock/eu-west-1` are not part of OpenRouter's standard routing and are used only when listed. Slugs vary by model (Claude on Vertex uses `google-vertex/europe`, Gemini uses `google-vertex/eu`), so list every variant you need; slugs that do not serve the model are skipped. With `Provider Fallbacks` off, requests fail instead of falling back to other providers.
+
+This chooses where inference runs. It is not OpenRouter's EU in-region routing (`eu.openrouter.ai`, Business and Enterprise plans), which also keeps request processing within the EU.
 
 #### Models and Cost
 
