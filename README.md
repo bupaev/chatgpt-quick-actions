@@ -2,7 +2,7 @@
 
 A [Raycast](https://www.raycast.com/) extension that performs one-shot actions (polish writing, summarize text, etc.) with any model available on [OpenRouter](https://openrouter.ai/models). An OpenRouter API key is required.
 
-<a title="Install chatgpt-quick-actions Raycast Extension" href="https://www.raycast.com/alanzchen/chatgpt-quick-actions"><img src="https://www.raycast.com/alanzchen/chatgpt-quick-actions/install_button@2x.png" height="64" alt="" style="height: 64px;"></a>
+Fork of [alanzchen/chatgpt-quick-actions](https://www.raycast.com/alanzchen/chatgpt-quick-actions), reworked to use OpenRouter only.
 
 https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a430-fedf58fabe28.mp4
 
@@ -27,12 +27,12 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 | **Refine**            | Refine writing and correct grammar mistakes                                       |
 | **Custom Action**     | Ask the model based on a custom prompt                                            |
 | **Execute**           | Replace selected text with the model output                                       |
-| **Proofread (no UI)** | Proofread and replace selected text without opening a preview                     |
-| **Rewrite (no UI)**   | Rewrite and replace selected text without opening a preview                       |
-| **Refine (no UI)**    | Refine and replace selected text without opening a preview                        |
+| **Proofread (No UI)** | Proofread and replace selected text without opening a preview                     |
+| **Rewrite (No UI)**   | Rewrite and replace selected text without opening a preview                       |
+| **Refine (No UI)**    | Refine and replace selected text without opening a preview                        |
 | **Preview**           | Use selected text as model input and preview the output                           |
 | **Transform**         | Replace selected text with the model output, based on a prompt entered at runtime |
-| **Ask**               | Ask the model a question using your input as context                              |
+| **Transform Preview** | Like Transform, but shows the result in a preview first                           |
 
 ## Tips
 
@@ -100,7 +100,9 @@ chatgpt-quick-actions/
 │   ├── custom.tsx        # Custom Action command
 │   ├── execute.ts        # Execute command
 │   ├── preview.tsx       # Preview command
-│   └── ask.tsx           # Ask command
+│   ├── transform.ts      # Transform command
+│   ├── transform_preview.tsx # Transform Preview command
+│   └── no_ui.ts          # Shared logic of the no-UI commands
 ├── test/                 # Command tests (node:test, mocked Raycast API and OpenRouter)
 ├── assets/               # Extension icons and images
 ├── package.json          # Extension manifest and configuration

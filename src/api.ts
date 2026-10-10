@@ -1,15 +1,6 @@
 import { getPreferenceValues } from "@raycast/api";
 import OpenAI from "openai";
 
-type Preferences = {
-  openrouterApiKey?: string;
-  openrouterModel?: string;
-  openrouterSmartModel?: string;
-  reasoningEffort?: string;
-  providerOrder?: string;
-  providerFallbacks?: boolean;
-};
-
 const REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 export type ReasoningEffort = (typeof REASONING_EFFORTS)[number];
 
@@ -25,8 +16,9 @@ const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const OPENROUTER_REFERER = "https://github.com/bupaev/chatgpt-quick-actions";
 const OPENROUTER_TITLE = "ChatGPT Quick Actions";
 
+// Generated from package.json into raycast-env.d.ts
 function getPreferences() {
-  return getPreferenceValues<Preferences>();
+  return getPreferenceValues<ExtensionPreferences>();
 }
 
 function requirePreference(value: string | undefined, title: string) {

@@ -1,15 +1,12 @@
 import { getPreferenceValues } from "@raycast/api";
 import { runNoUICommand } from "./no_ui";
 
-const prefs = getPreferenceValues();
-const model_override = prefs.openrouter_model_execute;
-const reasoning_effort = prefs.reasoning_effort_execute;
-
-export default async function Command() {
+export default async function Execute() {
+  const prefs = getPreferenceValues<Preferences.Execute>();
   await runNoUICommand({
     action: "Connecting",
-    model_override,
-    reasoning_effort,
+    model_override: prefs.openrouter_model_execute,
+    reasoning_effort: prefs.reasoning_effort_execute,
     successMessage: "Response pasted to the current application.",
   });
 }

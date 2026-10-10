@@ -1,8 +1,8 @@
-import { getPreferenceValues } from "@raycast/api";
+import { getPreferenceValues, LaunchProps } from "@raycast/api";
 import { runNoUICommand } from "./no_ui";
 
-export default async function Command(props: { arguments: { prompt: string } }) {
-  const prefs = getPreferenceValues();
+export default async function Transform(props: LaunchProps<{ arguments: Arguments.Transform }>) {
+  const prefs = getPreferenceValues<Preferences.Transform>();
   await runNoUICommand({
     action: "Transforming",
     prompt: props.arguments.prompt,

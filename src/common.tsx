@@ -7,6 +7,7 @@ import {
   showToast,
   Toast,
   Icon,
+  Keyboard,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -20,7 +21,7 @@ import {
   resolveModel,
   resolveReasoningEffort,
 } from "./api";
-import { formatCostUSD, formatTokens, sentToSideNote } from "./util";
+import { formatCostUSD, formatTokens, sendToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
@@ -39,7 +40,7 @@ export default function ResultView({
   user_extra_msg,
   selected_text,
 }: ResultViewProps) {
-  const pref = getPreferenceValues<{ sidenote?: boolean }>();
+  const pref = getPreferenceValues<Preferences>();
   // Reported by OpenRouter at the end of the stream; undefined while loading or on error
   const [usage, setUsage] = useState<RequestUsage>();
   // Seconds from the command start to the end of the answer; undefined while loading or on error
@@ -199,9 +200,9 @@ export default function ResultView({
       <Action
         title="Send to SideNote"
         onAction={async () => {
-          await sentToSideNote(response);
+          await sendToSideNote(response);
         }}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
+        shortcut={Keyboard.Shortcut.Common.Save}
         icon={Icon.Sidebar}
       />
     );
@@ -220,7 +221,7 @@ export default function ResultView({
             <Action.Paste title="Replace Selected" content={response} icon={Icon.Pencil} />
             {/* Second action: Raycast binds it to ⌘↵ automatically */}
             <Action.CopyToClipboard title="Copy Results" content={response} />
-            <Action title="Retry" onAction={retry} shortcut={{ modifiers: ["cmd"], key: "r" }} icon={Icon.Repeat} />
+            <Action title="Retry" onAction={retry} shortcut={Keyboard.Shortcut.Common.Refresh} icon={Icon.Repeat} />
             {smartModel && model !== smartModel && (
               <Action
                 title="Retry with Smartest Model"

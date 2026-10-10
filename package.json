@@ -429,7 +429,7 @@
     },
     {
       "name": "proofread-no-ui",
-      "title": "Proofread (no UI)",
+      "title": "Proofread (No UI)",
       "description": "Proofread selected text and replace it without showing a preview",
       "mode": "no-view",
       "preferences": [
@@ -499,7 +499,7 @@
     },
     {
       "name": "rewrite-no-ui",
-      "title": "Rewrite (no UI)",
+      "title": "Rewrite (No UI)",
       "description": "Rewrite selected text and replace it without showing a preview",
       "mode": "no-view",
       "preferences": [
@@ -569,7 +569,7 @@
     },
     {
       "name": "refine-no-ui",
-      "title": "Refine (no UI)",
+      "title": "Refine (No UI)",
       "description": "Refine selected text and replace it without showing a preview",
       "mode": "no-view",
       "preferences": [
