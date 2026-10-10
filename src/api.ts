@@ -48,3 +48,25 @@ export function getSmartModel() {
 export function resolveModel(modelOverride?: string) {
   return modelOverride?.trim() || getGlobalModel();
 }
+
+// Token counts and cost that OpenRouter attaches to every response (the last chunk when streaming)
+export interface RequestUsage {
+  promptTokens: number;
+  completionTokens: number;
+  reasoningTokens: number;
+  // In credits (1 credit = 1 USD); missing if OpenRouter did not report it
+  cost?: number;
+}
+
+type OpenRouterUsage = OpenAI.CompletionUsage & { cost?: number };
+
+export function parseUsage(usage: OpenAI.CompletionUsage | null | undefined): RequestUsage | undefined {
+  if (!usage) return undefined;
+  const { cost } = usage as OpenRouterUsage;
+  return {
+    promptTokens: usage.prompt_tokens,
+    completionTokens: usage.completion_tokens,
+    reasoningTokens: usage.completion_tokens_details?.reasoning_tokens ?? 0,
+    cost: typeof cost === "number" ? cost : undefined,
+  };
+}

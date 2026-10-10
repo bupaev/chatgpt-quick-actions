@@ -55,6 +55,22 @@ const chunk = (content, finish = null) => ({
   choices: [{ index: 0, delta: content == null ? {} : { content }, finish_reason: finish }],
 });
 
+// OpenRouter's final streaming chunk: no choices, only usage (cost in credits = USD)
+const usageChunk = ({ prompt = 10, completion = 5, reasoning = 0, cost = 0.000123 } = {}) => ({
+  id: "c1",
+  object: "chat.completion.chunk",
+  created: 1,
+  model: "m",
+  choices: [],
+  usage: {
+    prompt_tokens: prompt,
+    completion_tokens: completion,
+    total_tokens: prompt + completion,
+    completion_tokens_details: { reasoning_tokens: reasoning },
+    ...(cost === null ? {} : { cost }), // cost: null omits the field
+  },
+});
+
 const emptyChunk = () => ({ id: "c1", object: "chat.completion.chunk", created: 1, model: "m", choices: [] });
 
 const completion = (content) =>
@@ -78,8 +94,6 @@ const apiError = (status, message) =>
 const basePrefs = {
   openrouterApiKey: "or-test",
   openrouterModel: "google/gemini-2.5-flash",
-  openrouterInputPrice: "0.3",
-  openrouterOutputPrice: "2.5",
   // The smartest-model ID is a user setting without a default; any ID works here
   openrouterSmartModel: "anthropic/claude-opus-5.5",
   sidenote: false,
@@ -170,5 +184,6 @@ module.exports = {
   runAction,
   setup,
   sse,
+  usageChunk,
   waitFor,
 };

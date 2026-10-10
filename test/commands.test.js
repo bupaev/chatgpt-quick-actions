@@ -14,6 +14,7 @@ const {
   runAction,
   setup,
   sse,
+  usageChunk,
   waitFor,
 } = require("./helpers");
 
@@ -114,10 +115,12 @@ describe("no-UI commands", () => {
 });
 
 describe("result view", () => {
-  test("streams the answer and shows metadata, manual-price cost and actions", async () => {
+  test("streams the answer and shows OpenRouter usage, cost and actions", async () => {
     const rc = setup({
       prefs: { prompt_summarize: "SUM" },
-      respond: () => sse([chunk("Hello"), chunk(", world"), chunk(null, "stop")]),
+      // Usage comes after the finish_reason chunk, as OpenRouter sends it
+      respond: () =>
+        sse([chunk("Hello"), chunk(", world"), chunk(null, "stop"), usageChunk({ prompt: 12, completion: 3 })]),
     });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
 
@@ -129,8 +132,11 @@ describe("result view", () => {
     assert.equal(detail().isLoading, false);
     const m = metadata(detail());
     assert.equal(m["Current Model"], "google/gemini-2.5-flash");
-    assert.ok(Number(m["Response Tokens"]) > 0);
-    assert.match(m["Total Cost"], /^\$/);
+    assert.equal(m["Prompt Tokens"], "12");
+    assert.equal(m["Response Tokens"], "3");
+    assert.equal(m["Total Tokens"], "15");
+    assert.equal(m["Total Cost"], "$0.000123");
+    assert.equal(m["Reasoning Tokens"], undefined);
     const actions = actionTitles(detail());
     for (const title of ["Replace Selected", "Copy Results", "Retry", "Retry with Smartest Model"]) {
       assert.ok(actions.includes(title), `missing ${title} in ${actions}`);
@@ -138,17 +144,58 @@ describe("result view", () => {
     assert.equal(rc.toasts[0].style, "success");
   });
 
-  test("command override is used; manual prices do not apply to it", async () => {
+  test("command override is used and its cost is reported", async () => {
     const rc = setup({
       prefs: { openrouter_model_proofread: "mistralai/mistral-x" },
-      respond: () => sse([chunk("Fixed."), chunk(null, "stop")]),
+      respond: () => sse([chunk("Fixed."), chunk(null, "stop"), usageChunk({ cost: 0.5 })]),
     });
     const { detail } = await renderView(loadCommand("src/proofread.tsx"));
 
     assert.equal(rc.requests[0].body.model, "mistralai/mistral-x");
     const m = metadata(detail());
     assert.equal(m["Current Model"], "mistralai/mistral-x");
+    assert.equal(m["Total Cost"], "$0.500000");
+  });
+
+  test("reasoning tokens get their own row", async () => {
+    setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk({ completion: 40, reasoning: 30 })]) });
+    const { detail } = await renderView(loadCommand("src/preview.tsx"));
+
+    assert.equal(metadata(detail())["Reasoning Tokens"], "30");
+  });
+
+  test("missing usage or cost shows Unavailable", async () => {
+    setup({ respond: () => sse([chunk("x"), chunk(null, "stop")]) });
+    const { detail } = await renderView(loadCommand("src/preview.tsx"));
+    const m = metadata(detail());
+    assert.equal(m["Total Tokens"], "Unavailable");
     assert.equal(m["Total Cost"], "Unavailable");
+
+    setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk({ cost: null })]) });
+    const second = await renderView(loadCommand("src/preview.tsx"));
+    const m2 = metadata(second.detail());
+    assert.equal(m2["Total Tokens"], "15");
+    assert.equal(m2["Total Cost"], "Unavailable");
+  });
+
+  test("cumulative tokens and cost add up across retries; failed retries add nothing", async () => {
+    const rc = setup({
+      respond: (req, n) =>
+        n === 2
+          ? apiError(400, "Upstream error")
+          : sse([chunk("x"), chunk(null, "stop"), usageChunk({ prompt: 10, completion: 5, cost: 0.25 })]),
+    });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+    runAction(detail(), "Retry");
+    await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
+    assert.match(detail().markdown, /Upstream error/);
+    runAction(detail(), "Retry");
+    await waitFor(() => rc.requests.length === 3 && !detail().isLoading);
+
+    const m = metadata(detail());
+    assert.equal(m["Total Cost"], "$0.250000");
+    assert.equal(m["Cumulative Tokens"], "30");
+    assert.equal(m["Cumulative Cost"], "$0.500000");
   });
 
   test("API error is shown in the view", async () => {
@@ -222,7 +269,7 @@ describe("result view", () => {
 
 describe("Retry with Smartest Model", () => {
   test("re-runs with the configured smartest model; plain Retry goes back to the command model", async () => {
-    const rc = setup({ respond: () => sse([chunk("x"), chunk(null, "stop")]) });
+    const rc = setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk()]) });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
     runAction(detail(), "Retry with Smartest Model");
     await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
@@ -231,8 +278,7 @@ describe("Retry with Smartest Model", () => {
     assert.equal(rc.requests[1].body.model, "anthropic/claude-opus-5.5");
     const m = metadata(detail());
     assert.equal(m["Current Model"], "anthropic/claude-opus-5.5");
-    // Manual prices belong to the global model only
-    assert.equal(m["Total Cost"], "Unavailable");
+    assert.equal(m["Total Cost"], "$0.000123");
     // Already on the smartest model: the action disappears
     assert.ok(!actionTitles(detail()).includes("Retry with Smartest Model"));
     runAction(detail(), "Retry");

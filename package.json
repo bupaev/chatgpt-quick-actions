@@ -289,7 +289,6 @@
     }
   ],
   "dependencies": {
-    "@nem035/gpt-3-encoder": "^1.1.7",
     "@raycast/api": "^1.104.25",
     "openai": "^7.32.0",
     "run-applescript": "^7.1.0"
@@ -310,22 +309,6 @@
       "default": "google/gemini-2.5-flash",
       "title": "Model ID",
       "placeholder": "google/gemini-2.5-flash"
-    },
-    {
-      "name": "openrouterInputPrice",
-      "description": "Manual OpenRouter input price per 1M tokens in USD, used for cost estimates",
-      "type": "textfield",
-      "required": false,
-      "title": "OpenRouter Input Price",
-      "placeholder": "e.g. 0.15"
-    },
-    {
-      "name": "openrouterOutputPrice",
-      "description": "Manual OpenRouter output price per 1M tokens in USD, used for cost estimates",
-      "type": "textfield",
-      "required": false,
-      "title": "OpenRouter Output Price",
-      "placeholder": "e.g. 0.60"
     },
     {
       "name": "openrouterSmartModel",

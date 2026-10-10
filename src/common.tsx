@@ -9,8 +9,8 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getSmartModel, resolveModel } from "./api";
-import { countToken, estimatePrice, formatPriceUSD, sentToSideNote } from "./util";
+import { getClient, getSmartModel, parseUsage, RequestUsage, resolveModel } from "./api";
+import { formatCostUSD, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
@@ -27,14 +27,9 @@ export default function ResultView({
   user_extra_msg,
   selected_text,
 }: ResultViewProps) {
-  const pref = getPreferenceValues<{
-    sidenote?: boolean;
-    openrouterInputPrice?: string;
-    openrouterOutputPrice?: string;
-    openrouterModel?: string;
-  }>();
-  const [response_token_count, setResponseTokenCount] = useState(0);
-  const [prompt_token_count, setPromptTokenCount] = useState(0);
+  const pref = getPreferenceValues<{ sidenote?: boolean }>();
+  // Reported by OpenRouter at the end of the stream; undefined while loading or on error
+  const [usage, setUsage] = useState<RequestUsage>();
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [cumulative_tokens, setCumulativeTokens] = useState(0);
@@ -96,29 +91,37 @@ export default function ResultView({
         { signal: abortController.current?.signal },
       );
       if (gen !== generation.current) return;
-      setPromptTokenCount(countToken(sys_prompt + user_content));
 
       let response_ = "";
       let finishReason: string | null = null;
+      let usage_: RequestUsage | undefined;
+      // Read to the end: usage arrives in the last chunk, after the one with finish_reason
       for await (const part of stream) {
         if (gen !== generation.current) return;
-        // Some providers send chunks without choices (e.g. usage or keep-alive chunks)
+        // Some chunks carry no choices (e.g. the usage chunk or keep-alives)
         const choice = part.choices[0];
         const message = choice?.delta?.content;
         if (message) {
           response_ += message;
           setResponse(response_);
-          setResponseTokenCount(countToken(response_));
         }
         if (choice?.finish_reason) {
           finishReason = choice.finish_reason;
-          break; // Stream finished
         }
+        usage_ = parseUsage(part.usage) ?? usage_;
       }
       if (gen !== generation.current) return;
 
       // The stream may also end without a finish_reason, so finalize after the loop
       setLoading(false);
+      if (usage_) {
+        const { promptTokens, completionTokens, cost } = usage_;
+        setUsage(usage_);
+        setCumulativeTokens((tokens) => tokens + promptTokens + completionTokens);
+        if (cost !== undefined) {
+          setCumulativeCost((total) => total + cost);
+        }
+      }
       const duration = (new Date().getTime() - now.getTime()) / 1000;
       if (finishReason && finishReason !== "stop") {
         toast.style = Toast.Style.Failure;
@@ -150,6 +153,7 @@ export default function ResultView({
     }
     setLoading(true);
     setResponse("");
+    setUsage(undefined);
     getResult(gen);
   }
 
@@ -159,6 +163,7 @@ export default function ResultView({
     setModel(smartModel);
     setLoading(true);
     setResponse("");
+    setUsage(undefined);
     getResult(gen, smartModel);
   }
 
@@ -170,28 +175,6 @@ export default function ResultView({
       abortController.current?.abort();
     };
   }, []);
-
-  useEffect(() => {
-    if (loading == false) {
-      setCumulativeTokens((tokens) => tokens + prompt_token_count + response_token_count);
-      const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
-        openrouterInputPrice: pref.openrouterInputPrice,
-        openrouterOutputPrice: pref.openrouterOutputPrice,
-        openrouterModel: pref.openrouterModel,
-      });
-      if (estimatedCost >= 0) {
-        setCumulativeCost((cost) => cost + estimatedCost);
-      }
-    }
-  }, [
-    loading,
-    model,
-    pref.openrouterInputPrice,
-    pref.openrouterOutputPrice,
-    pref.openrouterModel,
-    prompt_token_count,
-    response_token_count,
-  ]);
 
   let sidenote = undefined;
   if (pref.sidenote) {
@@ -207,11 +190,8 @@ export default function ResultView({
     );
   }
 
-  const estimatedCost = estimatePrice(prompt_token_count, response_token_count, model, {
-    openrouterInputPrice: pref.openrouterInputPrice,
-    openrouterOutputPrice: pref.openrouterOutputPrice,
-    openrouterModel: pref.openrouterModel,
-  });
+  // Placeholder for values OpenRouter has not reported (yet)
+  const missing = loading ? "…" : "Unavailable";
 
   return (
     <Detail
@@ -242,20 +222,23 @@ export default function ResultView({
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label title="Current Model" text={model} />
-          <Detail.Metadata.Label title="Prompt Tokens" text={prompt_token_count.toString()} />
-          <Detail.Metadata.Label title="Response Tokens" text={response_token_count.toString()} />
+          <Detail.Metadata.Label title="Prompt Tokens" text={usage ? usage.promptTokens.toString() : missing} />
+          <Detail.Metadata.Label title="Response Tokens" text={usage ? usage.completionTokens.toString() : missing} />
+          {usage && usage.reasoningTokens > 0 && (
+            <Detail.Metadata.Label title="Reasoning Tokens" text={usage.reasoningTokens.toString()} />
+          )}
           <Detail.Metadata.Separator />
-          <Detail.Metadata.Label title="Total Tokens" text={(prompt_token_count + response_token_count).toString()} />
+          <Detail.Metadata.Label
+            title="Total Tokens"
+            text={usage ? (usage.promptTokens + usage.completionTokens).toString() : missing}
+          />
           <Detail.Metadata.Label
             title="Total Cost"
-            text={estimatedCost >= 0 ? formatPriceUSD(estimatedCost) : "Unavailable"}
+            text={usage?.cost !== undefined ? formatCostUSD(usage.cost) : missing}
           />
           <Detail.Metadata.Separator />
           <Detail.Metadata.Label title="Cumulative Tokens" text={cumulative_tokens.toString()} />
-          <Detail.Metadata.Label
-            title="Cumulative Cost"
-            text={cumulative_cost >= 0 ? formatPriceUSD(cumulative_cost) : "Unavailable"}
-          />
+          <Detail.Metadata.Label title="Cumulative Cost" text={formatCostUSD(cumulative_cost)} />
         </Detail.Metadata>
       }
     />

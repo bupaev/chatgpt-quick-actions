@@ -9,6 +9,7 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 ## Features
 
 - Results stream in real time
+- Exact token counts and cost per request, as reported by OpenRouter
 - Supports keyboard binding with specific command
 - Supports custom prompt for each action
 - Works with any OpenRouter model ID (OpenAI, Anthropic, Google, and others)
@@ -86,7 +87,7 @@ chatgpt-quick-actions/
 ├── src/                  # Source code
 │   ├── api.ts            # OpenRouter client and model resolution
 │   ├── common.tsx        # Shared UI components and logic
-│   ├── util.ts           # Token counting, cost estimate, SideNote
+│   ├── util.ts           # Cost formatting, SideNote
 │   ├── summarize.tsx     # Summarize command
 │   ├── proofread.tsx     # Proofread command
 │   ├── rewrite.tsx       # Rewrite command
@@ -110,9 +111,9 @@ chatgpt-quick-actions/
 
 Each command has a customizable prompt defined in `package.json` under the command's `preferences` section. Users can also override prompts via Raycast preferences at runtime.
 
-#### Models and Pricing
+#### Models and Cost
 
-Models are free-form OpenRouter model IDs set in the preferences, globally or per command. Cost estimates use the manual input/output prices from the preferences and apply only to the global model.
+Models are free-form OpenRouter model IDs set in the preferences, globally or per command. Token counts and cost come from the usage OpenRouter reports with every response, so they are exact for any model; no prices need to be configured.
 
 #### Adding a New Command
 
