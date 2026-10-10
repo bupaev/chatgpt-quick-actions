@@ -14,6 +14,7 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 - Supports custom prompt for each action
 - Works with any OpenRouter model ID (OpenAI, Anthropic, Google, and others)
 - Specify a global model or override it for each command
+- Set the reasoning effort globally or per command (`none` … `max`); "Model Default" leaves each model's own default
 
 ## Available Commands
 

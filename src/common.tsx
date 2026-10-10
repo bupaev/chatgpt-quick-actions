@@ -9,12 +9,22 @@ import {
   Icon,
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
-import { getClient, getSmartModel, parseUsage, RequestUsage, resolveModel } from "./api";
+import {
+  ChatStreamRequest,
+  getClient,
+  getSmartModel,
+  parseUsage,
+  reasoningParams,
+  RequestUsage,
+  resolveModel,
+  resolveReasoningEffort,
+} from "./api";
 import { formatCostUSD, formatTokens, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
   model_override?: string;
+  reasoning_effort?: string;
   toast_title: string;
   user_extra_msg?: string;
   selected_text?: string;
@@ -23,6 +33,7 @@ interface ResultViewProps {
 export default function ResultView({
   sys_prompt,
   model_override,
+  reasoning_effort,
   toast_title,
   user_extra_msg,
   selected_text,
@@ -42,6 +53,8 @@ export default function ResultView({
     }
   });
   const smartModel = getSmartModel();
+  // Also applies to "Retry with Smartest Model"
+  const effort = resolveReasoningEffort(reasoning_effort);
   const generation = useRef(0);
   const abortController = useRef<AbortController | null>(null);
 
@@ -79,17 +92,16 @@ export default function ResultView({
       const requestModel = forcedModel ?? resolveModel(model_override);
       setModel(requestModel);
       const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
-      const stream = await getClient().chat.completions.create(
-        {
-          model: requestModel,
-          messages: [
-            { role: "system", content: sys_prompt },
-            { role: "user", content: user_content },
-          ],
-          stream: true,
-        },
-        { signal: abortController.current?.signal },
-      );
+      const request: ChatStreamRequest = {
+        model: requestModel,
+        messages: [
+          { role: "system", content: sys_prompt },
+          { role: "user", content: user_content },
+        ],
+        stream: true,
+        ...reasoningParams(effort),
+      };
+      const stream = await getClient().chat.completions.create(request, { signal: abortController.current?.signal });
       if (gen !== generation.current) return;
 
       let response_ = "";
@@ -215,6 +227,7 @@ export default function ResultView({
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label title="Current Model" text={model} />
+          {effort && <Detail.Metadata.Label title="Reasoning Effort" text={effort} />}
           <Detail.Metadata.Label
             title="Response Time"
             text={responseTime !== undefined ? `${responseTime.toFixed(1)} s` : missing}

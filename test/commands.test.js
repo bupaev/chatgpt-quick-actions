@@ -300,3 +300,68 @@ describe("Retry with Smartest Model", () => {
     assert.ok(actionTitles(detail()).includes("Retry"));
   });
 });
+
+describe("reasoning effort", () => {
+  const stream = () => sse([chunk("x"), chunk(null, "stop"), usageChunk()]);
+
+  test("Model Default (the default) sends no reasoning parameter", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "default" }, respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal("reasoning" in rc.requests[0].body, false);
+    assert.equal(metadata(detail())["Reasoning Effort"], undefined);
+  });
+
+  test("global effort is sent and shown; per-command 'global' follows it", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "low", reasoning_effort_summarize: "global" }, respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.deepEqual(rc.requests[0].body.reasoning, { effort: "low" });
+    assert.equal(metadata(detail())["Reasoning Effort"], "low");
+  });
+
+  test("per-command override wins over the global effort", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "low", reasoning_effort_custom: "xhigh" }, respond: stream });
+    await renderView(loadCommand("src/custom.tsx"));
+
+    assert.deepEqual(rc.requests[0].body.reasoning, { effort: "xhigh" });
+  });
+
+  test("per-command Model Default overrides a global effort", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "high", reasoning_effort_proofread: "default" }, respond: stream });
+    await renderView(loadCommand("src/proofread.tsx"));
+
+    assert.equal("reasoning" in rc.requests[0].body, false);
+  });
+
+  test("unknown values are not sent", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "turbo" }, respond: stream });
+    await renderView(loadCommand("src/preview.tsx"));
+
+    assert.equal("reasoning" in rc.requests[0].body, false);
+  });
+
+  test("Retry with Smartest Model keeps the effort", async () => {
+    const rc = setup({ prefs: { reasoningEffort: "minimal" }, respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+    runAction(detail(), "Retry with Smartest Model");
+    await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
+
+    assert.equal(rc.requests[1].body.model, "anthropic/claude-opus-5.5");
+    assert.deepEqual(rc.requests[1].body.reasoning, { effort: "minimal" });
+  });
+
+  test("no-UI commands and transform send the effort too", async () => {
+    let rc = setup({
+      prefs: { reasoningEffort: "medium", reasoning_effort_proofread_no_ui: "none" },
+      respond: () => completion("ok"),
+    });
+    await loadCommand("src/proofread-no-ui.ts")();
+    assert.deepEqual(rc.requests[0].body.reasoning, { effort: "none" });
+
+    rc = setup({ prefs: { reasoningEffort: "medium" }, respond: () => completion("ok") });
+    await loadCommand("src/transform.ts")({ arguments: { prompt: "p" } });
+    assert.deepEqual(rc.requests[0].body.reasoning, { effort: "medium" });
+    assert.deepEqual(rc.pasted, ["ok"]);
+  });
+});

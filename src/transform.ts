@@ -7,6 +7,7 @@ export default async function Command(props: { arguments: { prompt: string } }) 
     action: "Transforming",
     prompt: props.arguments.prompt,
     model_override: prefs.openrouter_model_transform,
+    reasoning_effort: prefs.reasoning_effort_transform,
     successMessage: "Transformed text pasted.",
   });
 }

@@ -5,7 +5,16 @@ type Preferences = {
   openrouterApiKey?: string;
   openrouterModel?: string;
   openrouterSmartModel?: string;
+  reasoningEffort?: string;
 };
+
+const REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
+export type ReasoningEffort = (typeof REASONING_EFFORTS)[number];
+
+// OpenRouter's unified reasoning control; not part of the openai SDK types
+type OpenRouterParams = { reasoning?: { effort: ReasoningEffort } };
+export type ChatRequest = OpenAI.ChatCompletionCreateParamsNonStreaming & OpenRouterParams;
+export type ChatStreamRequest = OpenAI.ChatCompletionCreateParamsStreaming & OpenRouterParams;
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const OPENROUTER_REFERER = "https://github.com/bupaev/chatgpt-quick-actions";
@@ -42,6 +51,17 @@ export function getGlobalModel() {
 // Model for "Retry with Smartest Model"; undefined when not configured
 export function getSmartModel() {
   return getPreferences().openrouterSmartModel?.trim() || undefined;
+}
+
+// Command override ("global" = follow the global setting) wins over the global effort.
+// undefined means "Model Default": no reasoning parameter is sent.
+export function resolveReasoningEffort(effortOverride?: string): ReasoningEffort | undefined {
+  const value = effortOverride && effortOverride !== "global" ? effortOverride : getPreferences().reasoningEffort;
+  return REASONING_EFFORTS.find((effort) => effort === value);
+}
+
+export function reasoningParams(effort: ReasoningEffort | undefined): OpenRouterParams {
+  return effort ? { reasoning: { effort } } : {};
 }
 
 // Command-level override wins over the global model

@@ -36,6 +36,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_summarize",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -60,6 +106,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_proofread",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -84,6 +176,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_rewrite",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -108,6 +246,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_refine",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -132,6 +316,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_custom",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -148,6 +378,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_execute",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -172,6 +448,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_proofread_no_ui",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -196,6 +518,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_rewrite_no_ui",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -220,6 +588,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_refine_no_ui",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -236,6 +650,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_preview",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -260,6 +720,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_transform",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     },
@@ -284,6 +790,52 @@
           "required": false,
           "title": "Model Override",
           "placeholder": "Follow global model"
+        },
+        {
+          "name": "reasoning_effort_transform_preview",
+          "title": "Reasoning Effort Override",
+          "description": "Reasoning effort for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Model Default",
+              "value": "default"
+            },
+            {
+              "title": "None (No Reasoning)",
+              "value": "none"
+            },
+            {
+              "title": "Minimal",
+              "value": "minimal"
+            },
+            {
+              "title": "Low",
+              "value": "low"
+            },
+            {
+              "title": "Medium",
+              "value": "medium"
+            },
+            {
+              "title": "High",
+              "value": "high"
+            },
+            {
+              "title": "Extra High",
+              "value": "xhigh"
+            },
+            {
+              "title": "Max",
+              "value": "max"
+            }
+          ]
         }
       ]
     }
@@ -309,6 +861,48 @@
       "default": "google/gemini-2.5-flash",
       "title": "Model ID",
       "placeholder": "google/gemini-2.5-flash"
+    },
+    {
+      "name": "reasoningEffort",
+      "title": "Reasoning Effort",
+      "description": "How much the model reasons before answering. \"Model Default\" sends nothing and keeps each model’s own default. Models without reasoning ignore it.",
+      "type": "dropdown",
+      "required": false,
+      "default": "default",
+      "data": [
+        {
+          "title": "Model Default",
+          "value": "default"
+        },
+        {
+          "title": "None (No Reasoning)",
+          "value": "none"
+        },
+        {
+          "title": "Minimal",
+          "value": "minimal"
+        },
+        {
+          "title": "Low",
+          "value": "low"
+        },
+        {
+          "title": "Medium",
+          "value": "medium"
+        },
+        {
+          "title": "High",
+          "value": "high"
+        },
+        {
+          "title": "Extra High",
+          "value": "xhigh"
+        },
+        {
+          "title": "Max",
+          "value": "max"
+        }
+      ]
     },
     {
       "name": "openrouterSmartModel",

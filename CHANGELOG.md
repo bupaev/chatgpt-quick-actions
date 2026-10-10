@@ -6,6 +6,7 @@
 - Removed the OpenAI API key, provider switch, OpenAI model and per-command OpenAI model preferences; OpenRouter settings are kept as they were
 - Token counts and cost now come from OpenRouter's usage data: exact for every model, including per-command overrides; removed the manual price preferences and the GPT-3 tokenizer
 - Removed the cumulative tokens/cost rows; the result view shows the tokens, cost and response time of the latest request
+- Added a Reasoning Effort preference (global and per command), sent as OpenRouter's `reasoning.effort`; "Model Default" sends nothing
 - Replaced "Retry with GPT-5.4" with "Retry with Smartest Model" (⇧⌘R), configured by the `Smartest Model` preference
 - Fixed streaming that could hang on non-"stop" finish reasons, chunks without choices, and unhandled errors in no-UI commands
 - Updated dependencies (Raycast API 1.104, openai SDK 7)
