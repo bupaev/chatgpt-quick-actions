@@ -11,6 +11,7 @@
 - Replaced "Retry with GPT-5.4" with "Retry with Smartest Model" (⇧⌘R), configured by the `Smartest Model` preference
 - Fixed streaming that could hang on non-"stop" finish reasons, chunks without choices, and unhandled errors in no-UI commands
 - Updated dependencies (Raycast API 1.104, openai SDK 7)
+- Removed the SideNotes integration and the run-applescript dependency
 - Removed the unfinished, never-registered Ask command; title-cased the "(No UI)" command titles
 
 ## [Models Update] - 2026-03-16

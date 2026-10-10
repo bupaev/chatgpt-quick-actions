@@ -1,14 +1,4 @@
-import {
-  getSelectedText,
-  Detail,
-  getPreferenceValues,
-  ActionPanel,
-  Action,
-  showToast,
-  Toast,
-  Icon,
-  Keyboard,
-} from "@raycast/api";
+import { getSelectedText, Detail, ActionPanel, Action, showToast, Toast, Icon, Keyboard } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
   ChatStreamRequest,
@@ -21,7 +11,7 @@ import {
   resolveModel,
   resolveReasoningEffort,
 } from "./api";
-import { formatCostUSD, formatTokens, sendToSideNote } from "./util";
+import { formatCostUSD, formatTokens } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
@@ -40,7 +30,6 @@ export default function ResultView({
   user_extra_msg,
   selected_text,
 }: ResultViewProps) {
-  const pref = getPreferenceValues<Preferences>();
   // Reported by OpenRouter at the end of the stream; undefined while loading or on error
   const [usage, setUsage] = useState<RequestUsage>();
   // Seconds from the command start to the end of the answer; undefined while loading or on error
@@ -194,20 +183,6 @@ export default function ResultView({
     };
   }, []);
 
-  let sidenote = undefined;
-  if (pref.sidenote) {
-    sidenote = (
-      <Action
-        title="Send to SideNote"
-        onAction={async () => {
-          await sendToSideNote(response);
-        }}
-        shortcut={Keyboard.Shortcut.Common.Save}
-        icon={Icon.Sidebar}
-      />
-    );
-  }
-
   // Placeholder for values OpenRouter has not reported (yet)
   const missing = loading ? "…" : "Unavailable";
 
@@ -230,7 +205,6 @@ export default function ResultView({
                 icon={Icon.ArrowNe}
               />
             )}
-            {sidenote}
           </ActionPanel>
         )
       }

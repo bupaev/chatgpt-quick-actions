@@ -96,7 +96,6 @@ const basePrefs = {
   openrouterModel: "google/gemini-2.5-flash",
   // The smartest-model ID is a user setting without a default; any ID works here
   openrouterSmartModel: "anthropic/claude-opus-5.5",
-  sidenote: false,
 };
 
 // Resets the mocked Raycast state; `respond(request, n)` returns the Response for the n-th request

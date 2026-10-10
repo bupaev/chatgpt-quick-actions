@@ -89,7 +89,7 @@ chatgpt-quick-actions/
 ├── src/                  # Source code
 │   ├── api.ts            # OpenRouter client and model resolution
 │   ├── common.tsx        # Shared UI components and logic
-│   ├── util.ts           # Cost formatting, SideNote
+│   ├── util.ts           # Cost and token formatting
 │   ├── summarize.tsx     # Summarize command
 │   ├── proofread.tsx     # Proofread command
 │   ├── rewrite.tsx       # Rewrite command

@@ -842,8 +842,7 @@
   ],
   "dependencies": {
     "@raycast/api": "^1.104.25",
-    "openai": "^7.32.0",
-    "run-applescript": "^7.1.0"
+    "openai": "^7.32.0"
   },
   "preferences": [
     {
@@ -928,15 +927,6 @@
       "required": false,
       "title": "Smartest Model",
       "placeholder": "e.g. anthropic/claude-opus-5.5"
-    },
-    {
-      "name": "sidenote",
-      "title": "SideNote Integration",
-      "description": "Enable SideNote integration (requires SideNote). Allows you to send the results to SideNote as a new note.",
-      "label": "Enabled",
-      "type": "checkbox",
-      "default": false,
-      "required": false
     }
   ],
   "devDependencies": {
