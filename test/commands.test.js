@@ -135,7 +135,7 @@ describe("result view", () => {
     assert.equal(m["Prompt Tokens"], "12");
     assert.equal(m["Response Tokens"], "3");
     assert.equal(m["Total Tokens"], "15");
-    assert.equal(m["Total Cost"], "$0.000123");
+    assert.equal(m["Cost"], "$0.000123");
     assert.equal(m["Reasoning Tokens"], undefined);
     const actions = actionTitles(detail());
     for (const title of ["Replace Selected", "Copy Results", "Retry", "Retry with Smartest Model"]) {
@@ -154,7 +154,7 @@ describe("result view", () => {
     assert.equal(rc.requests[0].body.model, "mistralai/mistral-x");
     const m = metadata(detail());
     assert.equal(m["Current Model"], "mistralai/mistral-x");
-    assert.equal(m["Total Cost"], "$0.500000");
+    assert.equal(m["Cost"], "$0.500000");
   });
 
   test("reasoning tokens get their own row", async () => {
@@ -169,33 +169,37 @@ describe("result view", () => {
     const { detail } = await renderView(loadCommand("src/preview.tsx"));
     const m = metadata(detail());
     assert.equal(m["Total Tokens"], "Unavailable");
-    assert.equal(m["Total Cost"], "Unavailable");
+    assert.equal(m["Cost"], "Unavailable");
 
     setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk({ cost: null })]) });
     const second = await renderView(loadCommand("src/preview.tsx"));
     const m2 = metadata(second.detail());
     assert.equal(m2["Total Tokens"], "15");
-    assert.equal(m2["Total Cost"], "Unavailable");
+    assert.equal(m2["Cost"], "Unavailable");
   });
 
-  test("cumulative tokens and cost add up across retries; failed retries add nothing", async () => {
+  test("usage always belongs to the latest request; a failed retry shows none", async () => {
     const rc = setup({
       respond: (req, n) =>
         n === 2
           ? apiError(400, "Upstream error")
-          : sse([chunk("x"), chunk(null, "stop"), usageChunk({ prompt: 10, completion: 5, cost: 0.25 })]),
+          : sse([chunk("x"), chunk(null, "stop"), usageChunk({ prompt: 10 * n, completion: 5, cost: 0.25 })]),
     });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+    assert.equal(metadata(detail())["Prompt Tokens"], "10");
+
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
     assert.match(detail().markdown, /Upstream error/);
+    assert.equal(metadata(detail())["Total Tokens"], "Unavailable");
+    assert.equal(metadata(detail())["Cost"], "Unavailable");
+
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 3 && !detail().isLoading);
-
     const m = metadata(detail());
-    assert.equal(m["Total Cost"], "$0.250000");
-    assert.equal(m["Cumulative Tokens"], "30");
-    assert.equal(m["Cumulative Cost"], "$0.500000");
+    assert.equal(m["Prompt Tokens"], "30");
+    assert.equal(m["Cost"], "$0.250000");
+    assert.equal(m["Cumulative Tokens"], undefined);
   });
 
   test("API error is shown in the view", async () => {
@@ -278,7 +282,7 @@ describe("Retry with Smartest Model", () => {
     assert.equal(rc.requests[1].body.model, "anthropic/claude-opus-5.5");
     const m = metadata(detail());
     assert.equal(m["Current Model"], "anthropic/claude-opus-5.5");
-    assert.equal(m["Total Cost"], "$0.000123");
+    assert.equal(m["Cost"], "$0.000123");
     // Already on the smartest model: the action disappears
     assert.ok(!actionTitles(detail()).includes("Retry with Smartest Model"));
     runAction(detail(), "Retry");

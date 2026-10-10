@@ -32,8 +32,6 @@ export default function ResultView({
   const [usage, setUsage] = useState<RequestUsage>();
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
-  const [cumulative_tokens, setCumulativeTokens] = useState(0);
-  const [cumulative_cost, setCumulativeCost] = useState(0);
   const [model, setModel] = useState(() => {
     try {
       return resolveModel(model_override);
@@ -114,14 +112,7 @@ export default function ResultView({
 
       // The stream may also end without a finish_reason, so finalize after the loop
       setLoading(false);
-      if (usage_) {
-        const { promptTokens, completionTokens, cost } = usage_;
-        setUsage(usage_);
-        setCumulativeTokens((tokens) => tokens + promptTokens + completionTokens);
-        if (cost !== undefined) {
-          setCumulativeCost((total) => total + cost);
-        }
-      }
+      setUsage(usage_);
       const duration = (new Date().getTime() - now.getTime()) / 1000;
       if (finishReason && finishReason !== "stop") {
         toast.style = Toast.Style.Failure;
@@ -232,13 +223,7 @@ export default function ResultView({
             title="Total Tokens"
             text={usage ? (usage.promptTokens + usage.completionTokens).toString() : missing}
           />
-          <Detail.Metadata.Label
-            title="Total Cost"
-            text={usage?.cost !== undefined ? formatCostUSD(usage.cost) : missing}
-          />
-          <Detail.Metadata.Separator />
-          <Detail.Metadata.Label title="Cumulative Tokens" text={cumulative_tokens.toString()} />
-          <Detail.Metadata.Label title="Cumulative Cost" text={formatCostUSD(cumulative_cost)} />
+          <Detail.Metadata.Label title="Cost" text={usage?.cost !== undefined ? formatCostUSD(usage.cost) : missing} />
         </Detail.Metadata>
       }
     />
