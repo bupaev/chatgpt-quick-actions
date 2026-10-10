@@ -132,11 +132,8 @@ describe("result view", () => {
     assert.equal(detail().isLoading, false);
     const m = metadata(detail());
     assert.equal(m["Current Model"], "google/gemini-2.5-flash");
-    assert.equal(m["Prompt Tokens"], "12");
-    assert.equal(m["Response Tokens"], "3");
-    assert.equal(m["Total Tokens"], "15");
+    assert.equal(m["Tokens"], "12 in · 3 out");
     assert.equal(m["Cost"], "$0.000123");
-    assert.equal(m["Reasoning Tokens"], undefined);
     assert.match(m["Response Time"], /^\d+\.\d s$/);
     const actions = actionTitles(detail());
     for (const title of ["Replace Selected", "Copy Results", "Retry", "Retry with Smartest Model"]) {
@@ -158,24 +155,27 @@ describe("result view", () => {
     assert.equal(m["Cost"], "$0.500000");
   });
 
-  test("reasoning tokens get their own row", async () => {
-    setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk({ completion: 40, reasoning: 30 })]) });
+  test("reasoning tokens are shown within the output count; large numbers are grouped", async () => {
+    setup({
+      respond: () =>
+        sse([chunk("x"), chunk(null, "stop"), usageChunk({ prompt: 12345, completion: 40, reasoning: 30 })]),
+    });
     const { detail } = await renderView(loadCommand("src/preview.tsx"));
 
-    assert.equal(metadata(detail())["Reasoning Tokens"], "30");
+    assert.equal(metadata(detail())["Tokens"], "12,345 in · 40 out (30 reasoning)");
   });
 
   test("missing usage or cost shows Unavailable", async () => {
     setup({ respond: () => sse([chunk("x"), chunk(null, "stop")]) });
     const { detail } = await renderView(loadCommand("src/preview.tsx"));
     const m = metadata(detail());
-    assert.equal(m["Total Tokens"], "Unavailable");
+    assert.equal(m["Tokens"], "Unavailable");
     assert.equal(m["Cost"], "Unavailable");
 
     setup({ respond: () => sse([chunk("x"), chunk(null, "stop"), usageChunk({ cost: null })]) });
     const second = await renderView(loadCommand("src/preview.tsx"));
     const m2 = metadata(second.detail());
-    assert.equal(m2["Total Tokens"], "15");
+    assert.equal(m2["Tokens"], "10 in · 5 out");
     assert.equal(m2["Cost"], "Unavailable");
   });
 
@@ -187,19 +187,19 @@ describe("result view", () => {
           : sse([chunk("x"), chunk(null, "stop"), usageChunk({ prompt: 10 * n, completion: 5, cost: 0.25 })]),
     });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
-    assert.equal(metadata(detail())["Prompt Tokens"], "10");
+    assert.equal(metadata(detail())["Tokens"], "10 in · 5 out");
 
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
     assert.match(detail().markdown, /Upstream error/);
-    assert.equal(metadata(detail())["Total Tokens"], "Unavailable");
+    assert.equal(metadata(detail())["Tokens"], "Unavailable");
     assert.equal(metadata(detail())["Cost"], "Unavailable");
     assert.equal(metadata(detail())["Response Time"], "Unavailable");
 
     runAction(detail(), "Retry");
     await waitFor(() => rc.requests.length === 3 && !detail().isLoading);
     const m = metadata(detail());
-    assert.equal(m["Prompt Tokens"], "30");
+    assert.equal(m["Tokens"], "30 in · 5 out");
     assert.equal(m["Cost"], "$0.250000");
     assert.equal(m["Cumulative Tokens"], undefined);
   });

@@ -10,7 +10,7 @@ import {
 } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { getClient, getSmartModel, parseUsage, RequestUsage, resolveModel } from "./api";
-import { formatCostUSD, sentToSideNote } from "./util";
+import { formatCostUSD, formatTokens, sentToSideNote } from "./util";
 
 interface ResultViewProps {
   sys_prompt: string;
@@ -219,16 +219,7 @@ export default function ResultView({
             title="Response Time"
             text={responseTime !== undefined ? `${responseTime.toFixed(1)} s` : missing}
           />
-          <Detail.Metadata.Label title="Prompt Tokens" text={usage ? usage.promptTokens.toString() : missing} />
-          <Detail.Metadata.Label title="Response Tokens" text={usage ? usage.completionTokens.toString() : missing} />
-          {usage && usage.reasoningTokens > 0 && (
-            <Detail.Metadata.Label title="Reasoning Tokens" text={usage.reasoningTokens.toString()} />
-          )}
-          <Detail.Metadata.Separator />
-          <Detail.Metadata.Label
-            title="Total Tokens"
-            text={usage ? (usage.promptTokens + usage.completionTokens).toString() : missing}
-          />
+          <Detail.Metadata.Label title="Tokens" text={usage ? formatTokens(usage) : missing} />
           <Detail.Metadata.Label title="Cost" text={usage?.cost !== undefined ? formatCostUSD(usage.cost) : missing} />
         </Detail.Metadata>
       }
