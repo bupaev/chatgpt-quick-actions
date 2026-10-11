@@ -24,10 +24,10 @@
         {
           "name": "prompt_summarize",
           "title": "Summarize Prompt",
-          "description": "The prompt for the summarize command",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Summarize the following text as concise as possible: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_summarize",
@@ -94,10 +94,10 @@
         {
           "name": "prompt_proofread",
           "title": "Proofread Prompt",
-          "description": "The prompt for the proofread command",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Fix the grammar and typos in the text. Only return the given text. Respect line breaks.",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_proofread",
@@ -164,10 +164,10 @@
         {
           "name": "prompt_rewrite",
           "title": "Rewrite Prompt",
-          "description": "The prompt for the rewrite command",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Rewrite this using an academic tone: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_rewrite",
@@ -234,10 +234,10 @@
         {
           "name": "prompt_refine",
           "title": "Refine Prompt",
-          "description": "The prompt for the refine command",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Refine the writing and correct grammar mistakes: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_refine",
@@ -304,10 +304,10 @@
         {
           "name": "prompt_custom",
           "title": "Custom Prompt",
-          "description": "The prompt for the custom action command",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Refine the writing and correct grammar mistakes: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt (same as Refine)"
         },
         {
           "name": "openrouter_model_custom",
@@ -436,10 +436,10 @@
         {
           "name": "prompt_proofread_no_ui",
           "title": "Proofread Prompt",
-          "description": "The prompt for the proofread command (no UI)",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Fix the grammar and typos in the text. Only return the given text. Respect line breaks.",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_proofread_no_ui",
@@ -506,10 +506,10 @@
         {
           "name": "prompt_rewrite_no_ui",
           "title": "Rewrite Prompt",
-          "description": "The prompt for the rewrite command (no UI)",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Rewrite this using an academic tone: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_rewrite_no_ui",
@@ -576,10 +576,10 @@
         {
           "name": "prompt_refine_no_ui",
           "title": "Refine Prompt",
-          "description": "The prompt for the refine command (no UI)",
+          "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
-          "default": "Refine the writing and correct grammar mistakes: \n\n",
-          "required": false
+          "required": false,
+          "placeholder": "Built-in prompt"
         },
         {
           "name": "openrouter_model_refine_no_ui",

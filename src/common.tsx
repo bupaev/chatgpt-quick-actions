@@ -23,14 +23,15 @@ import {
   resolveReasoningEffort,
 } from "./api";
 import { formatCostUSD, formatTokens } from "./util";
+import { unwrapText, withTextTagNote, wrapText } from "./prompts";
 
 interface ResultViewProps {
   sys_prompt: string;
   model_override?: string;
   reasoning_effort?: string;
   toast_title: string;
-  user_extra_msg?: string;
-  selected_text?: string;
+  // Send the selection as data in <text-to-process> tags; off when the selection itself is the request
+  wrap_input?: boolean;
 }
 
 export default function ResultView({
@@ -38,8 +39,7 @@ export default function ResultView({
   model_override,
   reasoning_effort,
   toast_title,
-  user_extra_msg,
-  selected_text,
+  wrap_input = false,
 }: ResultViewProps) {
   // Reported by OpenRouter at the end of the stream; undefined while loading or on error
   const [usage, setUsage] = useState<RequestUsage>();
@@ -76,30 +76,26 @@ export default function ResultView({
     const toast = await showToast(Toast.Style.Animated, toast_title);
     let selectedText = "";
     let fromClipboard = false;
-    if (selected_text !== undefined) {
-      selectedText = selected_text;
-    } else {
-      try {
-        selectedText = await getSelectedText();
-      } catch {
-        // Falls back to the clipboard below
-      }
-      if (!selectedText) {
-        // Raycast could not read the selection (e.g. its window took focus first or the app does not
-        // expose it): use the clipboard instead and flag it, since it may hold older text
-        selectedText = (await Clipboard.readText().catch(() => undefined)) ?? "";
-        fromClipboard = selectedText !== "";
-      }
-      if (!selectedText) {
-        if (gen !== generation.current) return;
-        toast.title = "Error";
-        toast.style = Toast.Style.Failure;
-        setLoading(false);
-        setResponse(
-          "⚠️ Raycast was unable to get the selected text, and the clipboard is empty. Select or copy some text and try again.",
-        );
-        return;
-      }
+    try {
+      selectedText = await getSelectedText();
+    } catch {
+      // Falls back to the clipboard below
+    }
+    if (!selectedText) {
+      // Raycast could not read the selection (e.g. its window took focus first or the app does not
+      // expose it): use the clipboard instead and flag it, since it may hold older text
+      selectedText = (await Clipboard.readText().catch(() => undefined)) ?? "";
+      fromClipboard = selectedText !== "";
+    }
+    if (!selectedText) {
+      if (gen !== generation.current) return;
+      toast.title = "Error";
+      toast.style = Toast.Style.Failure;
+      setLoading(false);
+      setResponse(
+        "⚠️ Raycast was unable to get the selected text, and the clipboard is empty. Select or copy some text and try again.",
+      );
+      return;
     }
 
     if (gen !== generation.current) return;
@@ -108,11 +104,12 @@ export default function ResultView({
     try {
       const requestModel = forcedModel ?? resolveModel(model_override);
       setModel(requestModel);
-      const user_content = user_extra_msg ? `${user_extra_msg}\n\n${selectedText}` : selectedText;
+      const system_content = wrap_input ? withTextTagNote(sys_prompt) : sys_prompt;
+      const user_content = wrap_input ? wrapText(selectedText) : selectedText;
       const request: ChatStreamRequest = {
         model: requestModel,
         messages: [
-          { role: "system", content: sys_prompt },
+          { role: "system", content: system_content },
           { role: "user", content: user_content },
         ],
         stream: true,
@@ -132,7 +129,7 @@ export default function ResultView({
         const message = choice?.delta?.content;
         if (message) {
           response_ += message;
-          setResponse(response_);
+          setResponse(wrap_input ? unwrapText(response_) : response_);
         }
         if (choice?.finish_reason) {
           finishReason = choice.finish_reason;

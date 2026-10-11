@@ -89,6 +89,7 @@ chatgpt-quick-actions/
 ├── src/                  # Source code
 │   ├── api.ts            # OpenRouter client and model resolution
 │   ├── common.tsx        # Shared UI components and logic
+│   ├── prompts.ts        # Built-in prompts and <text-to-process> tag helpers
 │   ├── util.ts           # Cost and token formatting
 │   ├── summarize.tsx     # Summarize command
 │   ├── proofread.tsx     # Proofread command
@@ -113,7 +114,9 @@ chatgpt-quick-actions/
 
 #### Adding or Changing Prompts
 
-Each command has a customizable prompt defined in `package.json` under the command's `preferences` section. Users can also override prompts via Raycast preferences at runtime.
+The built-in prompts live in `src/prompts.ts`. A non-empty prompt preference in Raycast overrides the built-in one; clear the field to go back to it.
+
+Commands that process the selection (Summarize, Proofread, Rewrite, Refine, Custom Action, Transform and their No UI variants) send it as `<text-to-process>…</text-to-process>`, and their prompts treat the content of `<text-to-process>` as data, not instructions, so a selected question gets rewritten instead of answered. Prompts that do not mention `<text-to-process>` (the Transform prompt typed at runtime, or a customized preference) get a short note about the tags appended. Execute and Preview send the selection as is, because there the selection is the request. Tags that a model echoes around its answer are removed before the answer is shown or pasted.
 
 #### Default Settings and Syncing Between Machines
 

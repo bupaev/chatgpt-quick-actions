@@ -33,10 +33,13 @@ describe("no-UI commands", () => {
     assert.equal(req.headers.authorization, "Bearer or-test");
     assert.equal(req.headers["x-title"], "ChatGPT Quick Actions");
     assert.equal(req.body.model, "google/gemini-2.5-flash");
-    assert.deepEqual(req.body.messages, [
-      { role: "system", content: "PROOF" },
-      { role: "user", content: "Ths is a smal test." },
-    ]);
+    // A custom prompt that does not mention the tags gets the <text-to-process> note appended
+    assert.equal(req.body.messages.length, 2);
+    assert.match(req.body.messages[0].content, /^PROOF\n\nThe input is inside <text-to-process> tags/);
+    assert.deepEqual(req.body.messages[1], {
+      role: "user",
+      content: "<text-to-process>Ths is a smal test.</text-to-process>",
+    });
     assert.deepEqual(rc.pasted, ["This is a small test."]);
     assert.equal(rc.huds.at(-1), "Proofread text pasted.");
   });
@@ -100,7 +103,11 @@ describe("no-UI commands", () => {
     await loadCommand("src/transform.ts")({ arguments: { prompt: "Uppercase it" } });
 
     assert.equal(rc.requests[0].body.model, "openai/gpt-6-luna");
-    assert.equal(rc.requests[0].body.messages[0].content, "Uppercase it");
+    assert.match(
+      rc.requests[0].body.messages[0].content,
+      /^Uppercase it\n\nThe input is inside <text-to-process> tags/,
+    );
+    assert.equal(rc.requests[0].body.messages[1].content, "<text-to-process>Ths is a smal test.</text-to-process>");
     assert.deepEqual(rc.pasted, ["UPPER"]);
     assert.equal(rc.huds.at(-1), "Transformed text pasted.");
   });
@@ -127,7 +134,7 @@ describe("result view", () => {
     assert.match(rc.requests[0].url, OPENROUTER_URL);
     assert.equal(rc.requests[0].body.stream, true);
     assert.equal(rc.requests[0].body.model, "google/gemini-2.5-flash");
-    assert.equal(rc.requests[0].body.messages[0].content, "SUM");
+    assert.match(rc.requests[0].body.messages[0].content, /^SUM\n\n/);
     assert.equal(detail().markdown, "Hello, world");
     assert.equal(detail().isLoading, false);
     const m = metadata(detail());
@@ -432,7 +439,7 @@ describe("selection and clipboard fallback", () => {
     const rc = setup({ clipboard: "old clipboard", respond: stream });
     const { detail } = await renderView(loadCommand("src/summarize.tsx"));
 
-    assert.equal(rc.requests[0].body.messages[1].content, "Ths is a smal test.");
+    assert.equal(rc.requests[0].body.messages[1].content, "<text-to-process>Ths is a smal test.</text-to-process>");
     assert.equal(metadata(detail())["Input"], undefined);
   });
 
@@ -444,7 +451,7 @@ describe("selection and clipboard fallback", () => {
       const rc = setup({ selectedText, clipboard: "old clipboard", respond: stream });
       const { detail } = await renderView(loadCommand("src/summarize.tsx"));
 
-      assert.equal(rc.requests[0].body.messages[1].content, "old clipboard");
+      assert.equal(rc.requests[0].body.messages[1].content, "<text-to-process>old clipboard</text-to-process>");
       assert.equal(metadata(detail())["Input"].value, "Clipboard (no selection found)");
       assert.match(rc.toasts[0].title, /input from clipboard/);
     });
@@ -465,5 +472,80 @@ describe("selection and clipboard fallback", () => {
     assert.equal(rc.requests.length, 0);
     assert.deepEqual(rc.pasted, []);
     assert.match(rc.huds[0], /^No text selected/);
+  });
+});
+
+describe("built-in prompts and <text-to-process> tags", () => {
+  const stream =
+    (text = "x") =>
+    () =>
+      sse([chunk(text), chunk(null, "stop"), usageChunk()]);
+  const builtIn = [
+    ["src/summarize.tsx", "You are a summarization function."],
+    ["src/proofread.tsx", "You are a proofreading function."],
+    ["src/rewrite.tsx", "You are a text rewriting function."],
+    ["src/refine.tsx", "You are a text editing function."],
+    ["src/custom.tsx", "You are a text editing function."],
+  ];
+
+  for (const [entry, opening] of builtIn) {
+    test(`${entry} uses its built-in prompt when the preference is empty`, async () => {
+      const rc = setup({ respond: stream() });
+      await renderView(loadCommand(entry));
+
+      const [system, user] = rc.requests[0].body.messages;
+      assert.ok(system.content.startsWith(opening), system.content.slice(0, 60));
+      // Built-in prompts describe the tags themselves, so no note is appended
+      assert.ok(!system.content.includes("apply the instructions above"));
+      assert.equal(user.content, "<text-to-process>Ths is a smal test.</text-to-process>");
+    });
+  }
+
+  test("no-UI commands use the same built-in prompts", async () => {
+    const rc = setup({ respond: () => completion("ok") });
+    await loadCommand("src/rewrite-no-ui.ts")();
+
+    assert.ok(rc.requests[0].body.messages[0].content.startsWith("You are a text rewriting function."));
+    assert.equal(rc.requests[0].body.messages[1].content, "<text-to-process>Ths is a smal test.</text-to-process>");
+  });
+
+  test("a custom prompt that mentions <text-to-process> is used as is", async () => {
+    const custom = "Translate the content of <text-to-process> to German.";
+    const rc = setup({ prefs: { prompt_custom: custom }, respond: stream() });
+    await renderView(loadCommand("src/custom.tsx"));
+
+    assert.equal(rc.requests[0].body.messages[0].content, custom);
+  });
+
+  test("Execute and Preview send the selection as the request, without tags", async () => {
+    let rc = setup({ respond: () => completion("ok") });
+    await loadCommand("src/execute.ts")();
+    assert.deepEqual(rc.requests[0].body.messages, [{ role: "user", content: "Ths is a smal test." }]);
+
+    rc = setup({ respond: stream() });
+    await renderView(loadCommand("src/preview.tsx"));
+    assert.deepEqual(rc.requests[0].body.messages, [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: "Ths is a smal test." },
+    ]);
+  });
+
+  test("tags echoed by the model are removed in the view and before pasting", async () => {
+    setup({
+      respond: () =>
+        sse([chunk("<text-to-process>Fixed"), chunk(" text</text-to-process>"), chunk(null, "stop"), usageChunk()]),
+    });
+    const { detail } = await renderView(loadCommand("src/proofread.tsx"));
+    assert.equal(detail().markdown, "Fixed text");
+
+    const rc = setup({ respond: () => completion("<text-to-process>Fixed text</text-to-process>\n") });
+    await loadCommand("src/proofread-no-ui.ts")();
+    assert.deepEqual(rc.pasted, ["Fixed text"]);
+  });
+
+  test("Execute output is not unwrapped", async () => {
+    const rc = setup({ respond: () => completion("<text-to-process>kept</text-to-process>") });
+    await loadCommand("src/execute.ts")();
+    assert.deepEqual(rc.pasted, ["<text-to-process>kept</text-to-process>"]);
   });
 });
