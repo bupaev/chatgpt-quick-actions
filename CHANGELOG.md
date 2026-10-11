@@ -11,6 +11,7 @@
 - Replaced "Retry with GPT-5.4" with "Retry with Smartest Model" (⇧⌘R), configured by the `Smartest Model` preference
 - Fixed streaming that could hang on non-"stop" finish reasons, chunks without choices, and unhandled errors in no-UI commands
 - Updated dependencies (Raycast API 1.104, openai SDK 7)
+- Commands with a result view fall back to the clipboard when Raycast cannot read the selection, and flag it with an orange "Input: Clipboard" row and in the toast; no-UI commands never fall back, so they cannot paste over the selection based on stale clipboard text
 - Removed the SideNotes integration and the run-applescript dependency
 - Removed the unfinished, never-registered Ask command; title-cased the "(No UI)" command titles
 

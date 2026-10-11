@@ -99,10 +99,12 @@ const basePrefs = {
 };
 
 // Resets the mocked Raycast state; `respond(request, n)` returns the Response for the n-th request
-function setup({ prefs, selectedText = "Ths is a smal test.", respond }) {
+// selectedText: null makes getSelectedText() throw; clipboard: what Clipboard.readText() returns
+function setup({ prefs, selectedText = "Ths is a smal test.", clipboard, respond }) {
   const rc = {
     prefs: { ...basePrefs, ...prefs },
     selectedText,
+    clipboard,
     toasts: [],
     huds: [],
     pasted: [],

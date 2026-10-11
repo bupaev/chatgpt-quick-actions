@@ -1,4 +1,15 @@
-import { getSelectedText, Detail, ActionPanel, Action, showToast, Toast, Icon, Keyboard } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Clipboard,
+  Color,
+  Detail,
+  getSelectedText,
+  Icon,
+  Keyboard,
+  showToast,
+  Toast,
+} from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import {
   ChatStreamRequest,
@@ -36,6 +47,8 @@ export default function ResultView({
   const [responseTime, setResponseTime] = useState<number>();
   // Provider OpenRouter routed the request to, e.g. "Google"
   const [servedBy, setServedBy] = useState<string>();
+  // True when the selection could not be read and the clipboard was used instead
+  const [usedClipboard, setUsedClipboard] = useState(false);
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState(() => {
@@ -62,24 +75,35 @@ export default function ResultView({
     const now = new Date();
     const toast = await showToast(Toast.Style.Animated, toast_title);
     let selectedText = "";
+    let fromClipboard = false;
     if (selected_text !== undefined) {
       selectedText = selected_text;
     } else {
       try {
         selectedText = await getSelectedText();
       } catch {
+        // Falls back to the clipboard below
+      }
+      if (!selectedText) {
+        // Raycast could not read the selection (e.g. its window took focus first or the app does not
+        // expose it): use the clipboard instead and flag it, since it may hold older text
+        selectedText = (await Clipboard.readText().catch(() => undefined)) ?? "";
+        fromClipboard = selectedText !== "";
+      }
+      if (!selectedText) {
         if (gen !== generation.current) return;
         toast.title = "Error";
         toast.style = Toast.Style.Failure;
         setLoading(false);
         setResponse(
-          "⚠️ Raycast was unable to get the selected text. You may try copying the text to a text editor and try again.",
+          "⚠️ Raycast was unable to get the selected text, and the clipboard is empty. Select or copy some text and try again.",
         );
         return;
       }
     }
 
     if (gen !== generation.current) return;
+    setUsedClipboard(fromClipboard);
 
     try {
       const requestModel = forcedModel ?? resolveModel(model_override);
@@ -131,7 +155,9 @@ export default function ResultView({
         toast.title = `Stopped early (${finishReason}) after ${duration} seconds`;
       } else {
         toast.style = Toast.Style.Success;
-        toast.title = `Finished in ${duration} seconds`;
+        toast.title = fromClipboard
+          ? `Finished in ${duration} seconds (input from clipboard)`
+          : `Finished in ${duration} seconds`;
       }
     } catch (error) {
       if (gen !== generation.current) return;
@@ -210,6 +236,13 @@ export default function ResultView({
       }
       metadata={
         <Detail.Metadata>
+          {usedClipboard && (
+            <Detail.Metadata.Label
+              title="Input"
+              text={{ value: "Clipboard (no selection found)", color: Color.Orange }}
+              icon={{ source: Icon.Clipboard, tintColor: Color.Orange }}
+            />
+          )}
           <Detail.Metadata.Label title="Current Model" text={model} />
           {servedBy && <Detail.Metadata.Label title="Provider" text={servedBy} />}
           {effort && <Detail.Metadata.Label title="Reasoning Effort" text={effort} />}

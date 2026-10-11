@@ -424,3 +424,46 @@ describe("provider routing", () => {
     assert.equal(metadata(detail())["Provider"], undefined);
   });
 });
+
+describe("selection and clipboard fallback", () => {
+  const stream = () => sse([chunk("x"), chunk(null, "stop"), usageChunk()]);
+
+  test("view: uses the selection and shows no Input row when the selection is readable", async () => {
+    const rc = setup({ clipboard: "old clipboard", respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal(rc.requests[0].body.messages[1].content, "Ths is a smal test.");
+    assert.equal(metadata(detail())["Input"], undefined);
+  });
+
+  for (const [label, selectedText] of [
+    ["fails", null],
+    ["is empty", ""],
+  ]) {
+    test(`view: falls back to the clipboard when the selection ${label}, and flags it`, async () => {
+      const rc = setup({ selectedText, clipboard: "old clipboard", respond: stream });
+      const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+      assert.equal(rc.requests[0].body.messages[1].content, "old clipboard");
+      assert.equal(metadata(detail())["Input"].value, "Clipboard (no selection found)");
+      assert.match(rc.toasts[0].title, /input from clipboard/);
+    });
+  }
+
+  test("view: error when neither selection nor clipboard has text", async () => {
+    const rc = setup({ selectedText: null, clipboard: undefined, respond: stream });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal(rc.requests.length, 0);
+    assert.match(detail().markdown, /clipboard is empty/);
+  });
+
+  test("no-UI: never falls back to the clipboard", async () => {
+    const rc = setup({ selectedText: null, clipboard: "old clipboard", respond: () => completion("x") });
+    await loadCommand("src/proofread-no-ui.ts")();
+
+    assert.equal(rc.requests.length, 0);
+    assert.deepEqual(rc.pasted, []);
+    assert.match(rc.huds[0], /^No text selected/);
+  });
+});
