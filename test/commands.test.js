@@ -485,7 +485,7 @@ describe("built-in prompts and <text-to-process> tags", () => {
     ["src/proofread.tsx", "You are a proofreading function."],
     ["src/rewrite.tsx", "You are a text rewriting function."],
     ["src/refine.tsx", "You are a text editing function."],
-    ["src/custom.tsx", "You are a text editing function."],
+    ["src/custom.tsx", "You are a dictionary function."],
   ];
 
   for (const [entry, opening] of builtIn) {

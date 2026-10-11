@@ -19,20 +19,20 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 
 ## Available Commands
 
-| Command               | Description                                                                       |
-| --------------------- | --------------------------------------------------------------------------------- |
-| **Summarize**         | Summarize selected text                                                           |
-| **Proofread**         | Proofread selected text                                                           |
-| **Rewrite**           | Rewrite selected text with an academic tone                                       |
-| **Refine**            | Refine writing and correct grammar mistakes                                       |
-| **Custom Action**     | Ask the model based on a custom prompt                                            |
-| **Execute**           | Replace selected text with the model output                                       |
-| **Proofread (No UI)** | Proofread and replace selected text without opening a preview                     |
-| **Rewrite (No UI)**   | Rewrite and replace selected text without opening a preview                       |
-| **Refine (No UI)**    | Refine and replace selected text without opening a preview                        |
-| **Preview**           | Use selected text as model input and preview the output                           |
-| **Transform**         | Replace selected text with the model output, based on a prompt entered at runtime |
-| **Transform Preview** | Like Transform, but shows the result in a preview first                           |
+| Command               | Description                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| **Summarize**         | Summarize selected text                                                                           |
+| **Proofread**         | Proofread selected text                                                                           |
+| **Rewrite**           | Rewrite selected text with an academic tone                                                       |
+| **Refine**            | Refine writing and correct grammar mistakes                                                       |
+| **Custom Action**     | Run your own prompt on the selection; by default, gives a concise definition of the selected term |
+| **Execute**           | Replace selected text with the model output                                                       |
+| **Proofread (No UI)** | Proofread and replace selected text without opening a preview                                     |
+| **Rewrite (No UI)**   | Rewrite and replace selected text without opening a preview                                       |
+| **Refine (No UI)**    | Refine and replace selected text without opening a preview                                        |
+| **Preview**           | Use selected text as model input and preview the output                                           |
+| **Transform**         | Replace selected text with the model output, based on a prompt entered at runtime                 |
+| **Transform Preview** | Like Transform, but shows the result in a preview first                                           |
 
 ## Tips
 

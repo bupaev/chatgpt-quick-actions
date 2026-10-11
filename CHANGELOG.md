@@ -11,7 +11,7 @@
 - Replaced "Retry with GPT-5.4" with "Retry with Smartest Model" (⇧⌘R), configured by the `Smartest Model` preference
 - Fixed streaming that could hang on non-"stop" finish reasons, chunks without choices, and unhandled errors in no-UI commands
 - Updated dependencies (Raycast API 1.104, openai SDK 7)
-- New built-in prompts for Summarize, Proofread, Rewrite and Refine (`src/prompts.ts`); the selection is sent inside `<text-to-process>` tags as data, so questions and requests in it are processed instead of answered. Prompt preferences now override the built-in prompts and are empty by default
+- New built-in prompts for Summarize, Proofread, Rewrite, Refine and Custom Action (concise definition of a term) (`src/prompts.ts`); the selection is sent inside `<text-to-process>` tags as data, so questions and requests in it are processed instead of answered. Prompt preferences now override the built-in prompts and are empty by default
 - New defaults: Claude Haiku 5.5, low reasoning effort, `google-vertex/europe` provider order, Claude Opus 5.5 as the smartest model
 - Commands with a result view fall back to the clipboard when Raycast cannot read the selection, and flag it with an orange "Input: Clipboard" row and in the toast; no-UI commands never fall back, so they cannot paste over the selection based on stale clipboard text
 - Removed the SideNotes integration and the run-applescript dependency

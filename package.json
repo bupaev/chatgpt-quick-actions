@@ -307,7 +307,7 @@
           "description": "Overrides the built-in prompt (src/prompts.ts in the repository). Leave empty to use the built-in one. The selected text is sent inside <text-to-process> tags.",
           "type": "textfield",
           "required": false,
-          "placeholder": "Built-in prompt (same as Refine)"
+          "placeholder": "Built-in prompt (concise definition of a term)"
         },
         {
           "name": "openrouter_model_custom",
