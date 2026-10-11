@@ -857,9 +857,9 @@
       "description": "OpenRouter model ID used by all commands unless a command overrides it",
       "type": "textfield",
       "required": true,
-      "default": "google/gemini-2.5-flash",
+      "default": "anthropic/claude-haiku-5.5",
       "title": "Model ID",
-      "placeholder": "google/gemini-2.5-flash"
+      "placeholder": "anthropic/claude-haiku-5.5"
     },
     {
       "name": "reasoningEffort",
@@ -867,7 +867,7 @@
       "description": "How much the model reasons before answering. \"Model Default\" sends nothing and keeps each model’s own default. Models without reasoning ignore it.",
       "type": "dropdown",
       "required": false,
-      "default": "default",
+      "default": "low",
       "data": [
         {
           "title": "Model Default",
@@ -909,7 +909,8 @@
       "description": "Comma-separated OpenRouter provider slugs to try first, in order (copy them from a model page). Region-specific endpoints like google-vertex/europe are used only when listed here. Slugs that do not serve the model are skipped.",
       "type": "textfield",
       "required": false,
-      "placeholder": "e.g. google-vertex/europe, google-vertex/eu, amazon-bedrock/eu-west-1"
+      "placeholder": "e.g. google-vertex/europe, google-vertex/eu, amazon-bedrock/eu-west-1",
+      "default": "google-vertex/europe"
     },
     {
       "name": "providerFallbacks",
@@ -926,7 +927,8 @@
       "type": "textfield",
       "required": false,
       "title": "Smartest Model",
-      "placeholder": "e.g. anthropic/claude-opus-5.5"
+      "placeholder": "e.g. anthropic/claude-opus-5.5",
+      "default": "anthropic/claude-opus-5.5"
     }
   ],
   "devDependencies": {

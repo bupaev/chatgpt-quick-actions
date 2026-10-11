@@ -74,7 +74,7 @@ This is a Raycast extension built with [TypeScript](https://www.typescriptlang.o
 
    This will build the extension and start it in development mode with hot reloading. Raycast will open automatically and show your extension under the **Development** section in the root search.
 
-4. Open the extension preferences, enter your **OpenRouter API Key** and set a **Model ID** such as `google/gemini-2.5-flash`.
+4. Open the extension preferences and enter your **OpenRouter API Key**. Everything else has defaults (see below).
 
 5. Run the tests (they mock Raycast and OpenRouter, no API key needed):
 
@@ -114,6 +114,10 @@ chatgpt-quick-actions/
 #### Adding or Changing Prompts
 
 Each command has a customizable prompt defined in `package.json` under the command's `preferences` section. Users can also override prompts via Raycast preferences at runtime.
+
+#### Default Settings and Syncing Between Machines
+
+Preference defaults live in `package.json`, so they travel with the repository: after `git pull` on another Mac, every field that was not changed by hand shows the new default. Current defaults: Model ID `anthropic/claude-haiku-5.5`, Reasoning Effort `low`, Provider Order `google-vertex/europe` with fallbacks on, Smartest Model `anthropic/claude-opus-5.5`. A field edited in Raycast keeps its local value until you clear it. The API key is never stored in the repository.
 
 #### Provider Routing
 
