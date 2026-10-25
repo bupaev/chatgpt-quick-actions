@@ -4,13 +4,18 @@ import OpenAI from "openai";
 const REASONING_EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 export type ReasoningEffort = (typeof REASONING_EFFORTS)[number];
 
-// OpenRouter-only request fields, not part of the openai SDK types
+// Tiers that are sent; "default" (Standard) means no service_tier parameter
+const SERVICE_TIERS = ["flex", "priority", "ultrafast"] as const;
+export type ServiceTier = (typeof SERVICE_TIERS)[number];
+
+// OpenRouter-only request fields; service_tier replaces the SDK's narrower OpenAI type
 type OpenRouterParams = {
   reasoning?: { effort: ReasoningEffort };
   provider?: { order: string[]; allow_fallbacks?: boolean };
+  service_tier?: ServiceTier;
 };
-export type ChatRequest = OpenAI.ChatCompletionCreateParamsNonStreaming & OpenRouterParams;
-export type ChatStreamRequest = OpenAI.ChatCompletionCreateParamsStreaming & OpenRouterParams;
+export type ChatRequest = Omit<OpenAI.ChatCompletionCreateParamsNonStreaming, "service_tier"> & OpenRouterParams;
+export type ChatStreamRequest = Omit<OpenAI.ChatCompletionCreateParamsStreaming, "service_tier"> & OpenRouterParams;
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const OPENROUTER_REFERER = "https://github.com/bupaev/chatgpt-quick-actions";
@@ -41,6 +46,15 @@ export function getClient() {
   });
 }
 
+// The casts only widen service_tier: OpenRouter also accepts "ultrafast", which the openai SDK types lack
+export function createChatStream(request: ChatStreamRequest, signal?: AbortSignal) {
+  return getClient().chat.completions.create(request as OpenAI.ChatCompletionCreateParamsStreaming, { signal });
+}
+
+export function createChat(request: ChatRequest) {
+  return getClient().chat.completions.create(request as OpenAI.ChatCompletionCreateParamsNonStreaming);
+}
+
 export function getGlobalModel() {
   return requirePreference(getPreferences().openrouterModel, "Model ID");
 }
@@ -57,6 +71,12 @@ export function resolveReasoningEffort(effortOverride?: string): ReasoningEffort
   return REASONING_EFFORTS.find((effort) => effort === value);
 }
 
+// Same resolution as the reasoning effort; undefined means Standard: no service_tier is sent
+export function resolveServiceTier(tierOverride?: string): ServiceTier | undefined {
+  const value = tierOverride && tierOverride !== "global" ? tierOverride : getPreferences().serviceTier;
+  return SERVICE_TIERS.find((tier) => tier === value);
+}
+
 // Provider slugs from the preferences, e.g. "google-vertex/europe, amazon-bedrock/eu-west-1"
 export function getProviderOrder() {
   return (getPreferences().providerOrder ?? "")
@@ -65,11 +85,17 @@ export function getProviderOrder() {
     .filter(Boolean);
 }
 
-// Extra body fields for every request: reasoning effort and provider routing
-export function openRouterParams(effort: ReasoningEffort | undefined): OpenRouterParams {
+// Extra body fields for every request: reasoning effort, service tier and provider routing
+export function openRouterParams(
+  effort: ReasoningEffort | undefined,
+  serviceTier: ServiceTier | undefined,
+): OpenRouterParams {
   const params: OpenRouterParams = {};
   if (effort) {
     params.reasoning = { effort };
+  }
+  if (serviceTier) {
+    params.service_tier = serviceTier;
   }
   const order = getProviderOrder();
   if (order.length > 0) {
@@ -83,6 +109,12 @@ export function openRouterParams(effort: ReasoningEffort | undefined): OpenRoute
 export function parseProvider(response: object): string | undefined {
   const { provider } = response as { provider?: unknown };
   return typeof provider === "string" && provider ? provider : undefined;
+}
+
+// Tier that actually served the request ("default", "flex", "priority", "ultrafast"), from any response or chunk
+export function parseServiceTier(response: object): string | undefined {
+  const { service_tier } = response as { service_tier?: unknown };
+  return typeof service_tier === "string" && service_tier ? service_tier : undefined;
 }
 
 // Command-level override wins over the global model

@@ -82,6 +82,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_summarize",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -150,6 +180,36 @@
             {
               "title": "Max",
               "value": "max"
+            }
+          ]
+        },
+        {
+          "name": "service_tier_proofread",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
             }
           ]
         }
@@ -222,6 +282,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_rewrite",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -290,6 +380,36 @@
             {
               "title": "Max",
               "value": "max"
+            }
+          ]
+        },
+        {
+          "name": "service_tier_refine",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
             }
           ]
         }
@@ -362,6 +482,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_custom",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -422,6 +572,36 @@
             {
               "title": "Max",
               "value": "max"
+            }
+          ]
+        },
+        {
+          "name": "service_tier_execute",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
             }
           ]
         }
@@ -494,6 +674,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_proofread_no_ui",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -562,6 +772,36 @@
             {
               "title": "Max",
               "value": "max"
+            }
+          ]
+        },
+        {
+          "name": "service_tier_rewrite_no_ui",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
             }
           ]
         }
@@ -634,6 +874,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_refine_no_ui",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -694,6 +964,36 @@
             {
               "title": "Max",
               "value": "max"
+            }
+          ]
+        },
+        {
+          "name": "service_tier_preview",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
             }
           ]
         }
@@ -766,6 +1066,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_transform",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     },
@@ -836,6 +1166,36 @@
               "value": "max"
             }
           ]
+        },
+        {
+          "name": "service_tier_transform_preview",
+          "title": "Service Tier Override",
+          "description": "Service tier for this command",
+          "type": "dropdown",
+          "required": false,
+          "default": "global",
+          "data": [
+            {
+              "title": "Follow Global",
+              "value": "global"
+            },
+            {
+              "title": "Standard",
+              "value": "default"
+            },
+            {
+              "title": "Flex (Cheaper, Lower Priority)",
+              "value": "flex"
+            },
+            {
+              "title": "Fast (Priority, Higher Price)",
+              "value": "priority"
+            },
+            {
+              "title": "Ultrafast (Select Models)",
+              "value": "ultrafast"
+            }
+          ]
         }
       ]
     }
@@ -900,6 +1260,32 @@
         {
           "title": "Max",
           "value": "max"
+        }
+      ]
+    },
+    {
+      "name": "serviceTier",
+      "title": "Service Tier",
+      "description": "OpenRouter service tier. Standard sends nothing. Fast and Ultrafast use faster, pricier endpoints where a model has them and fall back to standard otherwise; Flex uses cheaper, lower-priority endpoints. Provider Order takes precedence over the tier.",
+      "type": "dropdown",
+      "required": false,
+      "default": "default",
+      "data": [
+        {
+          "title": "Standard",
+          "value": "default"
+        },
+        {
+          "title": "Flex (Cheaper, Lower Priority)",
+          "value": "flex"
+        },
+        {
+          "title": "Fast (Priority, Higher Price)",
+          "value": "priority"
+        },
+        {
+          "title": "Ultrafast (Select Models)",
+          "value": "ultrafast"
         }
       ]
     },

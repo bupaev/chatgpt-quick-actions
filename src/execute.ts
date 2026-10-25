@@ -7,6 +7,7 @@ export default async function Execute() {
     action: "Connecting",
     model_override: prefs.openrouter_model_execute,
     reasoning_effort: prefs.reasoning_effort_execute,
+    service_tier: prefs.service_tier_execute,
     successMessage: "Response pasted to the current application.",
   });
 }

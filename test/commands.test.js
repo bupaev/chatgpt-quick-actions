@@ -549,3 +549,79 @@ describe("built-in prompts and <text-to-process> tags", () => {
     assert.deepEqual(rc.pasted, ["<text-to-process>kept</text-to-process>"]);
   });
 });
+
+describe("service tier", () => {
+  const streamServedBy = (tier) => () =>
+    sse([
+      { ...chunk("x"), service_tier: tier },
+      { ...chunk(null, "stop"), service_tier: tier },
+      { ...usageChunk(), service_tier: tier },
+    ]);
+
+  test("Standard (the default) sends no service_tier and shows no row", async () => {
+    const rc = setup({ prefs: { serviceTier: "default" }, respond: streamServedBy("default") });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal("service_tier" in rc.requests[0].body, false);
+    assert.equal(metadata(detail())["Service Tier"], undefined);
+  });
+
+  test("global tier is sent and the served tier is shown", async () => {
+    const rc = setup({ prefs: { serviceTier: "priority" }, respond: streamServedBy("priority") });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal(rc.requests[0].body.service_tier, "priority");
+    assert.equal(metadata(detail())["Service Tier"], "priority");
+  });
+
+  test("a fallback to another tier is flagged", async () => {
+    setup({ prefs: { serviceTier: "priority" }, respond: streamServedBy("default") });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+
+    assert.equal(metadata(detail())["Service Tier"], "default (requested priority)");
+  });
+
+  test("per-command override wins; per-command Standard turns the global tier off", async () => {
+    let rc = setup({
+      prefs: { serviceTier: "flex", service_tier_rewrite: "ultrafast" },
+      respond: streamServedBy("ultrafast"),
+    });
+    await renderView(loadCommand("src/rewrite.tsx"));
+    assert.equal(rc.requests[0].body.service_tier, "ultrafast");
+
+    rc = setup({
+      prefs: { serviceTier: "priority", service_tier_proofread: "default" },
+      respond: streamServedBy("default"),
+    });
+    const { detail } = await renderView(loadCommand("src/proofread.tsx"));
+    assert.equal("service_tier" in rc.requests[0].body, false);
+    assert.equal(metadata(detail())["Service Tier"], undefined);
+  });
+
+  test("a non-standard tier is shown even when none was requested", async () => {
+    setup({ respond: streamServedBy("flex") });
+    const { detail } = await renderView(loadCommand("src/preview.tsx"));
+
+    assert.equal(metadata(detail())["Service Tier"], "flex");
+  });
+
+  test("tier combines with effort and routing, and applies to Retry with Smartest Model and no-UI commands", async () => {
+    let rc = setup({
+      prefs: { serviceTier: "priority", reasoningEffort: "low", providerOrder: "anthropic" },
+      respond: streamServedBy("priority"),
+    });
+    const { detail } = await renderView(loadCommand("src/summarize.tsx"));
+    runAction(detail(), "Retry with Smartest Model");
+    await waitFor(() => rc.requests.length === 2 && !detail().isLoading);
+    const body = rc.requests[1].body;
+    assert.equal(body.model, "anthropic/claude-opus-5.5");
+    assert.equal(body.service_tier, "priority");
+    assert.deepEqual(body.reasoning, { effort: "low" });
+    assert.deepEqual(body.provider, { order: ["anthropic"] });
+
+    rc = setup({ prefs: { serviceTier: "flex", service_tier_execute: "priority" }, respond: () => completion("ok") });
+    await loadCommand("src/execute.ts")();
+    assert.equal(rc.requests[0].body.service_tier, "priority");
+    assert.deepEqual(rc.pasted, ["ok"]);
+  });
+});

@@ -10,6 +10,7 @@ export default function Summarize() {
       wrap_input
       model_override={prefs.openrouter_model_summarize}
       reasoning_effort={prefs.reasoning_effort_summarize}
+      service_tier={prefs.service_tier_summarize}
       toast_title="Summarizing..."
     />
   );

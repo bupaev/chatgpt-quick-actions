@@ -1,12 +1,20 @@
 import { Clipboard, getSelectedText, showHUD } from "@raycast/api";
 import { unwrapText, withTextTagNote, wrapText } from "./prompts";
-import { ChatRequest, getClient, openRouterParams, resolveModel, resolveReasoningEffort } from "./api";
+import {
+  ChatRequest,
+  createChat,
+  openRouterParams,
+  resolveModel,
+  resolveReasoningEffort,
+  resolveServiceTier,
+} from "./api";
 
 interface RunNoUICommandProps {
   action: string;
   prompt?: string;
   model_override?: string;
   reasoning_effort?: string;
+  service_tier?: string;
   // Send the selection as data in <text-to-process> tags (only together with a prompt)
   wrapInput?: boolean;
   successMessage: string;
@@ -17,6 +25,7 @@ export async function runNoUICommand({
   prompt,
   model_override,
   reasoning_effort,
+  service_tier,
   wrapInput = false,
   successMessage,
 }: RunNoUICommandProps) {
@@ -43,8 +52,12 @@ export async function runNoUICommand({
         ]
       : [{ role: "user" as const, content: selectedText }];
 
-    const request: ChatRequest = { model, messages, ...openRouterParams(resolveReasoningEffort(reasoning_effort)) };
-    const response = await getClient().chat.completions.create(request);
+    const request: ChatRequest = {
+      model,
+      messages,
+      ...openRouterParams(resolveReasoningEffort(reasoning_effort), resolveServiceTier(service_tier)),
+    };
+    const response = await createChat(request);
 
     const content = response.choices[0]?.message?.content;
     const text = (wrap && content ? unwrapText(content) : content)?.trim();

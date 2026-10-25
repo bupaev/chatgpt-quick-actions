@@ -9,6 +9,7 @@ export default function TransformPreview(props: LaunchProps<{ arguments: Argumen
       wrap_input
       model_override={prefs.openrouter_model_transform_preview}
       reasoning_effort={prefs.reasoning_effort_transform_preview}
+      service_tier={prefs.service_tier_transform_preview}
       toast_title="Transforming..."
     />
   );

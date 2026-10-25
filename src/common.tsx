@@ -13,11 +13,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
   ChatStreamRequest,
-  getClient,
   getSmartModel,
   parseProvider,
   parseUsage,
+  createChatStream,
   openRouterParams,
+  parseServiceTier,
+  resolveServiceTier,
   RequestUsage,
   resolveModel,
   resolveReasoningEffort,
@@ -29,6 +31,7 @@ interface ResultViewProps {
   sys_prompt: string;
   model_override?: string;
   reasoning_effort?: string;
+  service_tier?: string;
   toast_title: string;
   // Send the selection as data in <text-to-process> tags; off when the selection itself is the request
   wrap_input?: boolean;
@@ -38,6 +41,7 @@ export default function ResultView({
   sys_prompt,
   model_override,
   reasoning_effort,
+  service_tier,
   toast_title,
   wrap_input = false,
 }: ResultViewProps) {
@@ -47,6 +51,8 @@ export default function ResultView({
   const [responseTime, setResponseTime] = useState<number>();
   // Provider OpenRouter routed the request to, e.g. "Google"
   const [servedBy, setServedBy] = useState<string>();
+  // Service tier that actually served the request, e.g. "priority" or "default"
+  const [servedTier, setServedTier] = useState<string>();
   // True when the selection could not be read and the clipboard was used instead
   const [usedClipboard, setUsedClipboard] = useState(false);
   const [response, setResponse] = useState("");
@@ -61,6 +67,7 @@ export default function ResultView({
   const smartModel = getSmartModel();
   // Also applies to "Retry with Smartest Model"
   const effort = resolveReasoningEffort(reasoning_effort);
+  const tier = resolveServiceTier(service_tier);
   const generation = useRef(0);
   const abortController = useRef<AbortController | null>(null);
 
@@ -113,9 +120,9 @@ export default function ResultView({
           { role: "user", content: user_content },
         ],
         stream: true,
-        ...openRouterParams(effort),
+        ...openRouterParams(effort, tier),
       };
-      const stream = await getClient().chat.completions.create(request, { signal: abortController.current?.signal });
+      const stream = await createChatStream(request, abortController.current?.signal);
       if (gen !== generation.current) return;
 
       let response_ = "";
@@ -138,6 +145,10 @@ export default function ResultView({
         const provider = parseProvider(part);
         if (provider) {
           setServedBy(provider);
+        }
+        const partTier = parseServiceTier(part);
+        if (partTier) {
+          setServedTier(partTier);
         }
       }
       if (gen !== generation.current) return;
@@ -182,6 +193,7 @@ export default function ResultView({
     setUsage(undefined);
     setResponseTime(undefined);
     setServedBy(undefined);
+    setServedTier(undefined);
     getResult(gen);
   }
 
@@ -194,6 +206,7 @@ export default function ResultView({
     setUsage(undefined);
     setResponseTime(undefined);
     setServedBy(undefined);
+    setServedTier(undefined);
     getResult(gen, smartModel);
   }
 
@@ -208,6 +221,14 @@ export default function ResultView({
 
   // Placeholder for values OpenRouter has not reported (yet)
   const missing = loading ? "…" : "Unavailable";
+
+  // Shown when a tier was requested or the request was served by a non-standard tier;
+  // flags a fallback, e.g. "default (requested priority)"
+  let tierLabel: string | undefined;
+  if (tier || (servedTier && servedTier !== "default")) {
+    const shown = servedTier ?? (tier && loading ? tier : missing);
+    tierLabel = tier && servedTier && servedTier !== tier ? `${shown} (requested ${tier})` : shown;
+  }
 
   return (
     <Detail
@@ -243,6 +264,7 @@ export default function ResultView({
           <Detail.Metadata.Label title="Current Model" text={model} />
           {servedBy && <Detail.Metadata.Label title="Provider" text={servedBy} />}
           {effort && <Detail.Metadata.Label title="Reasoning Effort" text={effort} />}
+          {tierLabel && <Detail.Metadata.Label title="Service Tier" text={tierLabel} />}
           <Detail.Metadata.Label
             title="Response Time"
             text={responseTime !== undefined ? `${responseTime.toFixed(1)} s` : missing}

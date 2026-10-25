@@ -10,6 +10,7 @@ export default async function ProofreadNoUI() {
     wrapInput: true,
     model_override: prefs.openrouter_model_proofread_no_ui,
     reasoning_effort: prefs.reasoning_effort_proofread_no_ui,
+    service_tier: prefs.service_tier_proofread_no_ui,
     successMessage: "Proofread text pasted.",
   });
 }
