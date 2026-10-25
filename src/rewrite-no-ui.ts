@@ -10,6 +10,7 @@ export default async function RewriteNoUI() {
     wrapInput: true,
     model_override: prefs.openrouter_model_rewrite_no_ui,
     reasoning_effort: prefs.reasoning_effort_rewrite_no_ui,
+    service_tier: prefs.service_tier_rewrite_no_ui,
     successMessage: "Rewritten text pasted.",
   });
 }

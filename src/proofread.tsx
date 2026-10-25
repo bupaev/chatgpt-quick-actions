@@ -10,6 +10,7 @@ export default function Proofread() {
       wrap_input
       model_override={prefs.openrouter_model_proofread}
       reasoning_effort={prefs.reasoning_effort_proofread}
+      service_tier={prefs.service_tier_proofread}
       toast_title="Proofreading..."
     />
   );

@@ -9,6 +9,7 @@ export default async function Transform(props: LaunchProps<{ arguments: Argument
     wrapInput: true,
     model_override: prefs.openrouter_model_transform,
     reasoning_effort: prefs.reasoning_effort_transform,
+    service_tier: prefs.service_tier_transform,
     successMessage: "Transformed text pasted.",
   });
 }

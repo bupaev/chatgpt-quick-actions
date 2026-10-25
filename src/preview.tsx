@@ -8,6 +8,7 @@ export default function Preview() {
       sys_prompt="You are a helpful assistant."
       model_override={prefs.openrouter_model_preview}
       reasoning_effort={prefs.reasoning_effort_preview}
+      service_tier={prefs.service_tier_preview}
       toast_title="Thinking..."
     />
   );

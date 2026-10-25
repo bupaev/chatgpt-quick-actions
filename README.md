@@ -15,6 +15,7 @@ https://user-images.githubusercontent.com/2144783/232259860-dcf47f25-cd1b-4612-a
 - Works with any OpenRouter model ID (OpenAI, Anthropic, Google, and others)
 - Specify a global model or override it for each command
 - Set the reasoning effort globally or per command (`none` … `max`); "Model Default" leaves each model's own default
+- Choose the OpenRouter service tier globally or per command: Standard, Flex (cheaper), Fast (priority) or Ultrafast
 - Choose OpenRouter providers and regions (e.g. EU endpoints such as `google-vertex/europe`) via the Provider Order preference
 
 ## Available Commands
@@ -117,6 +118,12 @@ chatgpt-quick-actions/
 The built-in prompts live in `src/prompts.ts`. A non-empty prompt preference in Raycast overrides the built-in one; clear the field to go back to it.
 
 Commands that process the selection (Summarize, Proofread, Rewrite, Refine, Custom Action, Transform and their No UI variants) send it as `<text-to-process>…</text-to-process>`, and their prompts treat the content of `<text-to-process>` as data, not instructions, so a selected question gets rewritten instead of answered. Prompts that do not mention `<text-to-process>` (the Transform prompt typed at runtime, or a customized preference) get a short note about the tags appended. Execute and Preview send the selection as is, because there the selection is the request. Tags that a model echoes around its answer are removed before the answer is shown or pasted.
+
+#### Service Tier
+
+`Service Tier` is sent as OpenRouter's top-level `service_tier` (`flex`, `priority`, `ultrafast`); Standard sends nothing. Tiers exist only for some models and providers, for example `anthropic/fast` for Claude Opus 5.5 at twice the standard price, and none for Claude Haiku 5.5. Without a matching endpoint OpenRouter falls back to the standard tier and bills the standard price. The result view shows the tier that actually served the request, flagged when it differs from the requested one, e.g. `default (requested priority)`.
+
+`Provider Order` takes precedence over the tier: with `google-vertex/europe` listed, requests go there first, and a fast endpoint elsewhere is only a fallback. To use a fast tier, either clear Provider Order or list the tier endpoint, e.g. `anthropic/fast`.
 
 #### Default Settings and Syncing Between Machines
 

@@ -10,6 +10,7 @@ export default function CustomAction() {
       wrap_input
       model_override={prefs.openrouter_model_custom}
       reasoning_effort={prefs.reasoning_effort_custom}
+      service_tier={prefs.service_tier_custom}
       toast_title="Thinking..."
     />
   );

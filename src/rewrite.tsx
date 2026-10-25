@@ -10,6 +10,7 @@ export default function Rewrite() {
       wrap_input
       model_override={prefs.openrouter_model_rewrite}
       reasoning_effort={prefs.reasoning_effort_rewrite}
+      service_tier={prefs.service_tier_rewrite}
       toast_title="Rewriting..."
     />
   );

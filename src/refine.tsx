@@ -10,6 +10,7 @@ export default function Refine() {
       wrap_input
       model_override={prefs.openrouter_model_refine}
       reasoning_effort={prefs.reasoning_effort_refine}
+      service_tier={prefs.service_tier_refine}
       toast_title="Refining..."
     />
   );
